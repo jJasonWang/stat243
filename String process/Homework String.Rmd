@@ -1,0 +1,74 @@
+---
+title: "String Processing (Section 3.1 of Unit4)"
+author: "Chih Hui Wang"
+date: "September 4, 2015"
+output:
+  html_document: 
+    keep_md: yes
+  pdf_document:
+    latex_engine: xelatex
+---
+```{r setup, echo=FALSE}
+knitr::opts_chunk$set(comment="")
+```
+
+```{r package}
+library(stringr)
+```
+
+1. Only the strings “cat”, “at”, and “t”.
+```{r 1}
+check_cat1 <- function(str){
+  cat <- str_detect(str, pattern="cat") & nchar(str) == 3
+  at <- str_detect(str, pattern="at") & nchar(str) == 2
+  t <- str_detect(str, pattern="t") & nchar(str) == 1
+  data.frame(string=str, check=cat | at | t)
+}
+#test
+CAT <- c("blackcat", "cat", "at", "atm", "t")
+check_cat1(CAT)
+```
+2. The strings “cat”, “caat”, “caaat”, etc.
+```{r 2}
+check_cat2 <- function(str){
+  data.frame(string=str, check=str_detect(str, "ca+t"))
+}
+#Test2
+CAT2 <- c("bcabct", "cat", "caat", "caaat", "cabat",  "caaata")
+check_cat2(CAT2)
+```
+3. “dog”, “Dog”, “dOg”, “doG”, “DOg”, etc. (the word dog in any combination of lower and upper case).
+```{r 3}
+check_dog <- function(str){
+  data.frame(string=str, check=str_detect(str, fixed("dog", ignore_case=TRUE)))
+}
+#Test
+DOG <- c("dog", "Dog", "dOg", "doG", "DOg", "DoG", "dOG", "DOG")
+check_dog(DOG)
+```
+4. Any positive number with or without a decimal point.
+```{r 4}
+check_decimal <- function(number){
+  str <- as.character(number)
+  with <- str_detect(str, fixed("."))
+  list <- c()
+  list$w_decimal <- number[with]; list$wo_decimal <- number[!with]
+  list$boolean <- with
+  list
+}
+#Test
+n <- c(1, 1.5, 2, 2.5, 3)
+check_decimal(n)
+```
+5. Any line with exactly two words separated by any amount of whitespace (spaces or tabs). There may or may not be whitespace at the beginning or end of the line.
+```{r 5}
+exact_twoword_seperate <- function(str){
+  l <- str_split(str, " +|\t")
+  no_word <- sapply(l, f <- function(x) sum(x == ""))
+  data.frame(string=str, check=(sapply(l, length) - no_word) == 2)
+}
+#Test
+my_str <- c("helloworld", "hello world", "hello  world",
+            "hello   world", "hello world ", " hello word", " helloworld ")
+exact_twoword_seperate(my_str)
+```
