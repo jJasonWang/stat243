@@ -1,0 +1,149 @@
+%% LyX 2.1.4 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass{article}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{geometry}
+\geometry{verbose,tmargin=2.54cm,bmargin=2.54cm,lmargin=3cm,rmargin=3cm}
+\begin{document}
+
+
+\title{STAT243 Problem Set1}
+
+
+\author{Name: Chih Hui Wang SID: 26955255}
+
+
+\date{September 5, 2015}
+
+\maketitle
+<<setup, include=FALSE>>=
+knitr::opts_chunk$set(fig.width = 5, fig.height = 5)
+knitr::opts_chunk$set(fig.align='center')
+knitr::opts_chunk$set(comment="")
+@
+
+1. (a) To solve this problem, I first downloaded the file and unziped
+it. Before dividing the data into country and region, I have to observe
+whether there is any pattern I can use to extract data. Then, I subseted
+the data by two term ``2005'' and ``Area Harvested'' and sort
+by the value column to get the top five countries. Finally, I generalized
+the above process and wrote a function that can automatic pritn out
+the top five countries, once providing a year. 
+
+Use \textbf{wget} to download the file. Then, rename it as apricots.zip,
+otherwise the name of file will be to long to see. Then, \textbf{unzip}
+the file.
+
+<<download, engine='bash'>>=
+#Download file 
+wget "http://data.un.org/Handlers/DownloadHandler.ashx?DataFilter=itemCode:526&DataMartId=FAO&Format=csv&c=2,3,4,5,6,7&s=countryName:asc,elementCode:asc,year:desc" -O apricots.zip 
+
+#Unzip 
+unzip apricots.zip
+@
+
+I noticed that there is a ``+'' in the end of first column for the
+region. Therefore, I can use \textbf{grep} to pull out those line
+with ``+'' as well as without ``+'' with \textbf{-v} in the command.
+The country-level data will have some unmeaningful row for this problem.
+I used \textbf{head }and remove the line. 
+
+<<divide, engine='bash'>>=
+#To observe data 
+cat UNdata_Export_20150902_035723262.csv | less 
+
+#For region, there will be a "+" in the end of the firt column. 
+grep "+" UNdata_Export_20150902_035723262.csv > regions.csv 
+
+#The last 7 line is unrelated, so I remove them. 
+grep -v "+" UNdata_Export_20150902_035723262.csv | head -n -7 > countries.csv
+@
+
+I subsetted the data by ``2005'' and ``Area Harvested''. When
+subsetting by ``2005'', there are also some 2005 in other columns
+(in a format like''2005.000''), so I use\textbf{ \textbackslash{}''2005\textbackslash{}''}
+to ensure that I pull out the correct line. Then, I have to sort the
+data by column 6 which represents value. I found that there are \textbf{``}
+in each column which make me hard to delimit column by \textbf{,}.
+Hence, I used \textbf{sed} to eliminate those \textbf{``} and then
+sort the data from big to small \textbf{(-r)} by column 6 by the command
+\textbf{-k6} with \textbf{-t','} indicating that I want to use , to
+seperate each column. Finally, use \textbf{head} to get the top 5
+countries and \textbf{cut} to get the first column.
+
+<<function, engine='bash'>>=
+#function 
+function rankAH() {   
+	grep \"$1\" countries.csv | grep "Area Harvested" | sed 's/"//g' | sort -nr -t',' -k6 | head -n5 | cut -d',' -f1 } 
+#1965, 1975, 1985, 1995 
+rankAH 1965 
+rankAH 1975 
+rankAH 1985 
+rankAH 1995
+@
+
+(b) The parameter of the function is the itemcode. I used \textbf{wget}
+the first step in (a) to download data and rename it. Then, when \textbf{unzip}
+the file, I set a modifier\textbf{ -p} which can directly print out
+data and the result can be use by other operation such as \textbf{head},
+\textbf{sort}. 
+
+<<function1, engine='bash'>>=
+function dldata() { 	
+wget "http://data.un.org/Handlers/DownloadHandler.ashx?DataFilter=itemCode:$1&DataMartId=FAO&Format=csv&c=2,3,4,5,6,7&s=countryName:asc,elementCode:asc,year:desc" -O $1.zip unzip -p $1.zip }
+
+dldata 572
+#Test
+#first 5 rows 
+dldata 572 | head -n5
+#sort by value
+didata 572 | head -n5 | sed 's/"//g' | sort -nr -t',' -k6
+@
+
+(c)
+
+2. To address the problem, I think that I have to examine the source
+code of the website, find out those line with \textbf{``.txt''}
+and then detect any pattern I can utilize to get the whole name of
+txt file. After that I can use a for loop to download those files.
+In the for loop, I can write a command to print out which file is
+downloading.
+
+I use \textbf{wget} to get the html code. \textbf{-O - }is to get
+the standard out which I can store in a txt file, called \textbf{allhtml.txt}.
+When I saw the output of \textbf{grep ``.txt'' allhtml.txt}, I found
+that the file name is between two \textbf{``}. Therefore, I can use
+\textbf{``} to delimit the data and get out the name by command \textbf{cut}.
+I stored the output into a variable called \textbf{dowload}. and then
+write a for loop to download files as well as print out which file
+I am downloading now. 
+
+<<function2, engine='bash'>>=
+#Get html
+wget "http://www1.ncdc.noaa.gov/pub/data/ghcn/daily/" -O - > allhtml.txt
+
+#See pattern
+grep ".txt" allhtml.txt
+grep ".txt" allhtml.txt | head -n1
+
+#Make a variable 
+download=$(grep ".txt" allhtml.txt | cut -d'"' -f8)
+
+#For loop
+for file in $download 	
+do  echo "Download $file now" 	
+	wget "http://www1.ncdc.noaa.gov/pub/data/ghcn/daily/$file" 
+done
+@
+
+3.
+
+<<r>>=
+hist(LakeHuron) 
+lowHi <- c(which.min(LakeHuron), which.max(LakeHuron))
+attributes(LakeHuron)
+attributes(LakeHuron)$tsp[1] - 1 + lowHi
+@
+
+\end{document}
