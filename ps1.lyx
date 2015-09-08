@@ -161,7 +161,15 @@ wget
 \series bold
 unzip
 \series default
- the file.
+ the file (use the 
+\series bold
+-c
+\series default
+ to output the file and put it into 
+\series bold
+apricots.csv
+\series default
+.)
 \end_layout
 
 \begin_layout Standard
@@ -170,7 +178,7 @@ status open
 
 \begin_layout Plain Layout
 
-<<download, engine='bash'>>=
+<<download, engine='bash', eval=FALSE	>>=
 \end_layout
 
 \begin_layout Plain Layout
@@ -180,9 +188,17 @@ status open
 
 \begin_layout Plain Layout
 
-wget "http://data.un.org/Handlers/DownloadHandler.ashx?DataFilter=itemCode:526&Data
-MartId=FAO&Format=csv&c=2,3,4,5,6,7&s=countryName:asc,elementCode:asc,year:desc"
- -O apricots.zip 
+wget "http://data.un.org/Handlers/DownloadHandler.ashx?DataFilter=itemCode:526
+\end_layout
+
+\begin_layout Plain Layout
+
+&DataMartId=FAO&Format=csv&c=2,3,4,5,6,7&s=countryName:asc,elementCode:asc,
+\end_layout
+
+\begin_layout Plain Layout
+
+year:desc" -O apricots.zip 
 \end_layout
 
 \begin_layout Plain Layout
@@ -196,7 +212,7 @@ MartId=FAO&Format=csv&c=2,3,4,5,6,7&s=countryName:asc,elementCode:asc,year:desc"
 
 \begin_layout Plain Layout
 
-unzip apricots.zip
+unzip -c apricots.zip > apricots.csv
 \end_layout
 
 \begin_layout Plain Layout
@@ -259,7 +275,7 @@ status open
 
 \begin_layout Plain Layout
 
-<<divide, engine='bash'>>=
+<<divide, engine='bash', eval=FALSE>>=
 \end_layout
 
 \begin_layout Plain Layout
@@ -269,7 +285,7 @@ status open
 
 \begin_layout Plain Layout
 
-cat UNdata_Export_20150902_035723262.csv | less 
+cat apricots.csv | head -n5
 \end_layout
 
 \begin_layout Plain Layout
@@ -284,7 +300,7 @@ cat UNdata_Export_20150902_035723262.csv | less
 
 \begin_layout Plain Layout
 
-grep "+" UNdata_Export_20150902_035723262.csv > regions.csv 
+grep "+" apricots.csv > regions.csv 
 \end_layout
 
 \begin_layout Plain Layout
@@ -299,7 +315,7 @@ grep "+" UNdata_Export_20150902_035723262.csv > regions.csv
 
 \begin_layout Plain Layout
 
-grep -v "+" UNdata_Export_20150902_035723262.csv | head -n -7 > countries.csv
+grep -v "+" apricots.csv | head -n -7 > countries.csv
 \end_layout
 
 \begin_layout Plain Layout
@@ -363,8 +379,26 @@ Area Harvested
 
 \series default
  to ensure that I pull out the correct line.
- Then, I have to sort the data by column 6 which represents value.
- I found that there are 
+ After 
+\series bold
+grep
+\series default
+ by 
+\series bold
+
+\begin_inset Quotes eld
+\end_inset
+
+Area Harvested
+\series default
+
+\begin_inset Quotes erd
+\end_inset
+
+, I first observed the data to check whether some countries have different
+ formats.
+ I found that some countries will have , in their name, so we better use
+ 
 \series bold
 
 \begin_inset Quotes eld
@@ -372,36 +406,41 @@ Area Harvested
 
 
 \series default
- in each column which make me hard to delimit column by 
-\series bold
-,
-\series default
-.
- Hence, I used 
-\series bold
-sed
-\series default
- to eliminate those 
+ to delimit data.
+ Then, I have to sort the data by column 12 which represents value.
+ I use the 
 \series bold
 
-\begin_inset Quotes eld
+\begin_inset Quotes erd
 \end_inset
 
 
 \series default
- and then sort the data from big to small 
+ to delimit the data and then sort the data from big to small 
 \series bold
 (-r)
 \series default
- by column 6 by the command 
+ by column 12 by the command 
 \series bold
--k6
+-k12
 \series default
  with 
 \series bold
--t','
+-t'
+\begin_inset Quotes erd
+\end_inset
+
+'
 \series default
- indicating that I want to use , to seperate each column.
+ indicating that I want to use 
+\series bold
+
+\begin_inset Quotes eld
+\end_inset
+
+
+\series default
+ to seperate each column.
  Finally, use 
 \series bold
 head
@@ -419,7 +458,65 @@ status open
 
 \begin_layout Plain Layout
 
-<<function, engine='bash'>>=
+<<Countries, engine='bash', eval=FALSE>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+cut -d'"' -f2 countries.csv | uniq
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<2005, engine='bash', eval=FALSE>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#2005 Area Harvested 
+\end_layout
+
+\begin_layout Plain Layout
+
+grep 
+\backslash
+"2005
+\backslash
+" countries.csv | grep "Area Harvested" | sort -nr -t'"' -k12 | head -n5
+ | cut -d'"' -f2 
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<function, engine='bash', eval=FALSE>>=
 \end_layout
 
 \begin_layout Plain Layout
@@ -429,7 +526,7 @@ status open
 
 \begin_layout Plain Layout
 
-function rankAH() {   
+function rankAH() { 
 \end_layout
 
 \begin_layout Plain Layout
@@ -438,8 +535,13 @@ function rankAH() {
 \backslash
 "$1
 \backslash
-" countries.csv | grep "Area Harvested" | sed 's/"//g' | sort -nr -t',' -k6
- | head -n5 | cut -d',' -f1 } 
+" countries.csv | grep "Area Harvested" | sort -nr -t'"' -k12 | head -n5
+ | cut -d'"' -f2  
+\end_layout
+
+\begin_layout Plain Layout
+
+} 
 \end_layout
 
 \begin_layout Plain Layout
@@ -511,7 +613,7 @@ status open
 
 \begin_layout Plain Layout
 
-<<function1, engine='bash'>>=
+<<function1, engine='bash', eval=FALSE>>=
 \end_layout
 
 \begin_layout Plain Layout
@@ -521,9 +623,27 @@ function dldata() {
 
 \begin_layout Plain Layout
 
-wget "http://data.un.org/Handlers/DownloadHandler.ashx?DataFilter=itemCode:$1&DataM
-artId=FAO&Format=csv&c=2,3,4,5,6,7&s=countryName:asc,elementCode:asc,year:desc"
- -O $1.zip unzip -p $1.zip }
+wget "http://data.un.org/Handlers/DownloadHandler.ashx?DataFilter=itemCode:$1
+\end_layout
+
+\begin_layout Plain Layout
+
+&DataMartId=FAO&Format=csv&c=2,3,4,5,6,7&s=countryName:asc,elementCode:asc,
+\end_layout
+
+\begin_layout Plain Layout
+
+year:desc" -O $1.zip 
+\end_layout
+
+\begin_layout Plain Layout
+
+unzip -p $1.zip 
+\end_layout
+
+\begin_layout Plain Layout
+
+}
 \end_layout
 
 \begin_layout Plain Layout
@@ -571,7 +691,122 @@ didata 572 | head -n5 | sed 's/"//g' | sort -nr -t',' -k6
 \end_layout
 
 \begin_layout Standard
-(c)
+(c) To deal with the problem, first I have to find the table of item and
+ its name, so I go to the website (http://faostat.fao.org/site/384/default.aspx).
+ I used wget to get the html and then see whether any pattern I can utilize.
+ I found that 
+\begin_inset Quotes eld
+\end_inset
+
+</td><td>
+\begin_inset Quotes erd
+\end_inset
+
+ can help me to pull out the item name and code.
+ I used sed to substite the < to > and then I can easily delimit the data
+ by >.
+ The item code is located at 7 column and the name is located at 15 if using
+ the > as a delimiter.
+ Finally, I wrote a function call Itemname.
+ Once the user input the name, then the function will use the 
+\series bold
+grep
+\series default
+ and 
+\series bold
+cut
+\series default
+ to get the correct itemcode and then output the data by the function 
+\series bold
+dldata 
+\series default
+in (b).
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Itemcode, engine='bash', eval=FALSE>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#Match file preparation
+\end_layout
+
+\begin_layout Plain Layout
+
+wget "http://faostat.fao.org/site/384/default.aspx" -O - > table.html 
+\end_layout
+
+\begin_layout Plain Layout
+
+grep "</td><td>" table.html | sed 's/</>/g' | cut -d'>' -f7,15 > code.txt
+\end_layout
+
+\begin_layout Plain Layout
+
+#function
+\end_layout
+
+\begin_layout Plain Layout
+
+function dldataName() {
+\end_layout
+
+\begin_layout Plain Layout
+
+	itemcode=$(grep $1 code.txt | cut -d'>' -f1)
+\end_layout
+
+\begin_layout Plain Layout
+
+	wget "http://data.un.org/Handlers/DownloadHandler.ashx?DataFilter=itemCode:$itemco
+de
+\end_layout
+
+\begin_layout Plain Layout
+
+&DataMartId=FAO&Format=csv&c=2,3,4,5,6,7&s=countryName:asc,elementCode:asc,
+\end_layout
+
+\begin_layout Plain Layout
+
+year:desc" -O $1.zip
+\end_layout
+
+\begin_layout Plain Layout
+
+	unzip -p $1.zip 
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+#Example
+\end_layout
+
+\begin_layout Plain Layout
+
+dldataName Apricots
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -660,7 +895,7 @@ status open
 
 \begin_layout Plain Layout
 
-<<function2, engine='bash'>>=
+<<function2, engine='bash', eval=FALSE>>=
 \end_layout
 
 \begin_layout Plain Layout
