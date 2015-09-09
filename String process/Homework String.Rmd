@@ -3,10 +3,10 @@ title: "String Processing (Section 3.1 of Unit4)"
 author: "Chih Hui Wang"
 date: "September 4, 2015"
 output:
-  html_document: 
-    keep_md: yes
   pdf_document:
     latex_engine: xelatex
+  html_document: 
+    keep_md: yes
 ---
 ```{r setup, echo=FALSE}
 knitr::opts_chunk$set(comment="")
@@ -19,10 +19,7 @@ library(stringr)
 1. Only the strings “cat”, “at”, and “t”.
 ```{r 1}
 check_cat1 <- function(str){
-  cat <- str_detect(str, pattern="cat") & nchar(str) == 3
-  at <- str_detect(str, pattern="at") & nchar(str) == 2
-  t <- str_detect(str, pattern="t") & nchar(str) == 1
-  data.frame(string=str, check=cat | at | t)
+  data.frame(string=str, check=str_detect(CAT, "^cat$|^at$|^t$"))
 }
 #test
 CAT <- c("blackcat", "cat", "at", "atm", "t")
@@ -63,9 +60,7 @@ check_decimal(n)
 5. Any line with exactly two words separated by any amount of whitespace (spaces or tabs). There may or may not be whitespace at the beginning or end of the line.
 ```{r 5}
 exact_twoword_seperate <- function(str){
-  l <- str_split(str, " +|\t")
-  no_word <- sapply(l, f <- function(x) sum(x == ""))
-  data.frame(string=str, check=(sapply(l, length) - no_word) == 2)
+  str_detect(str, " *[[:word:]]+ +[[:word:]]+ *|\t*[[:word:]]+\t+[[:word:]]+\t*")
 }
 #Test
 my_str <- c("helloworld", "hello world", "hello  world",

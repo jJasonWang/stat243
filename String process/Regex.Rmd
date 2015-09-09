@@ -1,0 +1,34 @@
+---
+title: "Regex"
+author: "Name: Chih Hui Wang SID: 26955255"
+date: "September 8, 2015"
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+---
+```{r setup, echo=FALSE}
+knitr::opts_chunk$set(eval=FALSE)
+```
+1. Only the strings “cat”, “at”, and “t”.
+```{r}
+/\b(cat)\b|\b(at)\b|\b(t)\b/g
+```
+2. The strings “cat”, “caat”, “caaat”, etc.
+```{r}
+/ca+t/g
+```
+3. “dog”, “Dog”, “dOg”, “doG”, “DOg”, etc. (the word dog in any combination of lower and upper case).
+```{r}
+/dog/gi
+```
+4. Any positive number with or without a decimal point.
+```{r}
+/\./g
+```
+5. Any line with exactly two words separated by any amount of whitespace (spaces or tabs). There may or may not be whitespace at the beginning or end of the line.
+```{r}
+/ *[[:word:]]+ +[[:word:]]+ *|\t*[[:word:]]+\t+[[:word:]]+\t*/g
+```
+
+
+

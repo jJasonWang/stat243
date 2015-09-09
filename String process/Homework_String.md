@@ -12,10 +12,7 @@ library(stringr)
 
 ```r
 check_cat1 <- function(str){
-  cat <- str_detect(str, pattern="cat") & nchar(str) == 3
-  at <- str_detect(str, pattern="at") & nchar(str) == 2
-  t <- str_detect(str, pattern="t") & nchar(str) == 1
-  data.frame(string=str, check=cat | at | t)
+  data.frame(string=str, check=str_detect(CAT, "^cat$|^at$|^t$"))
 }
 #test
 CAT <- c("blackcat", "cat", "at", "atm", "t")
@@ -102,9 +99,7 @@ $boolean
 
 ```r
 exact_twoword_seperate <- function(str){
-  l <- str_split(str, " +|\t")
-  no_word <- sapply(l, f <- function(x) sum(x == ""))
-  data.frame(string=str, check=(sapply(l, length) - no_word) == 2)
+  str_detect(str, " *[[:word:]]+ +[[:word:]]+ *|\t*[[:word:]]+\t+[[:word:]]+\t*")
 }
 #Test
 my_str <- c("helloworld", "hello world", "hello  world",
@@ -113,12 +108,5 @@ exact_twoword_seperate(my_str)
 ```
 
 ```
-         string check
-1    helloworld FALSE
-2   hello world  TRUE
-3  hello  world  TRUE
-4 hello   world  TRUE
-5  hello world   TRUE
-6    hello word  TRUE
-7   helloworld  FALSE
+[1] FALSE  TRUE  TRUE  TRUE  TRUE  TRUE FALSE
 ```
