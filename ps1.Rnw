@@ -31,15 +31,16 @@ by the value column to get the top five countries. Finally, I generalized
 the above process and wrote a function that can automatic pritn out
 the top five countries, once providing a year. 
 
-Use \textbf{wget} to download the file. Then, rename it as apricots.zip,
-otherwise the name of file will be to long to see. Then, \textbf{unzip}
-the file (use the \textbf{-c} to output the file and put it into \textbf{apricots.csv}.)
+Use \textbf{curl} to download the file and modifier \textbf{-o} to
+rename the file. Then, rename it as apricots.zip, otherwise the name
+of file will be to long to see. Then, \textbf{unzip} the file (use
+the \textbf{-c} to output the file and put it into \textbf{apricots.csv}.)
 
-<<download, engine='bash', eval=FALSE	>>=
+<<download, engine='bash'>>=
 #Download file 
-wget "http://data.un.org/Handlers/DownloadHandler.ashx?DataFilter=itemCode:526
+curl -s "http://data.un.org/Handlers/DownloadHandler.ashx?DataFilter=itemCode:526
 &DataMartId=FAO&Format=csv&c=2,3,4,5,6,7&s=countryName:asc,elementCode:asc,
-year:desc" -O apricots.zip 
+year:desc" -osS apricots.zip 
 
 #Unzip 
 unzip -c apricots.zip > apricots.csv
@@ -51,7 +52,7 @@ with ``+'' as well as without ``+'' with \textbf{-v} in the command.
 The country-level data will have some unmeaningful row for this problem.
 I used \textbf{head }and remove the line. 
 
-<<divide, engine='bash', eval=FALSE>>=
+<<divide, engine='bash'>>=
 #To observe data 
 cat apricots.csv | head -n5
 
@@ -76,47 +77,52 @@ with \textbf{-t''''} indicating that I want to use \textbf{``} to
 seperate each column. Finally, use \textbf{head} to get the top 5
 countries and \textbf{cut} to get the first column.
 
-<<Countries, engine='bash', eval=FALSE>>=
+<<Countries, engine='bash'>>=
 cut -d'"' -f2 countries.csv | uniq
 @
 
-<<2005, engine='bash', eval=FALSE>>=
+<<2005, engine='bash'>>=
 #2005 Area Harvested 
-grep \"2005\" countries.csv | grep "Area Harvested" | sort -nr -t'"' -k12 | head -n5 | cut -d'"' -f2 
+grep \"2005\" countries.csv | grep "Area Harvested" | sort -nr -t'"' -k12 | head -n5 |
+cut -d'"' -f2 
 @
 
-<<function, engine='bash', eval=FALSE>>=
+<<function, engine='bash'>>=
 #function 
 function rankAH() { 
-	grep \"$1\" countries.csv | grep "Area Harvested" | sort -nr -t'"' -k12 | head -n5 | cut -d'"' -f2  
+	grep \"$1\" countries.csv | grep "Area Harvested" | sort -nr -t'"' -k12 | head -n5 |
+cut -d'"' -f2  
 } 
-#1965, 1975, 1985, 1995 
+#1965, 1975, 1985, 1995
+echo 1965
 rankAH 1965 
+echo 1975
 rankAH 1975 
-rankAH 1985 
+echo 1985
+rankAH 1985
+echo 1995
 rankAH 1995
 @
 
-(b) The parameter of the function is the itemcode. I used \textbf{wget}
-the first step in (a) to download data and rename it. Then, when \textbf{unzip}
-the file, I set a modifier\textbf{ -p} which can directly print out
-data and the result can be use by other operation such as \textbf{head},
-\textbf{sort}. 
+(b) The parameter of the function is the itemcode. I used\textbf{
+curl} the first step in (a) to download data and rename it. Then,
+when \textbf{unzip} the file, I set a modifier\textbf{ -p} which can
+directly print out data and the result can be use by other operation
+such as \textbf{head}, \textbf{sort}. 
 
-<<function1, engine='bash', eval=FALSE>>=
+<<function1, engine='bash'>>=
 function dldata() { 	
-wget "http://data.un.org/Handlers/DownloadHandler.ashx?DataFilter=itemCode:$1
+	curl -s "http://data.un.org/Handlers/DownloadHandler.ashx?DataFilter=itemCode:$1
 &DataMartId=FAO&Format=csv&c=2,3,4,5,6,7&s=countryName:asc,elementCode:asc,
-year:desc" -O $1.zip 
-unzip -p $1.zip 
+year:desc" -o $1.zip 
+	unzip -p $1.zip 
 }
 
-dldata 572
 #Test
 #first 5 rows 
 dldata 572 | head -n5
 #sort by value
-didata 572 | head -n5 | sed 's/"//g' | sort -nr -t',' -k6
+dldata 572 | head -n5 | sed 's/"//g' | sort -nr -t',' -k6
 @
 
 (c) To deal with the problem, first I have to find the table of item
@@ -131,20 +137,20 @@ the function will use the \textbf{grep} and \textbf{cut} to get the
 correct itemcode and then output the data by the function \textbf{dldata
 }in (b). 
 
-<<Itemcode, engine='bash', eval=FALSE>>=
+<<Itemcode, engine='bash'>>=
 #Match file preparation
-wget "http://faostat.fao.org/site/384/default.aspx" -O - > table.html 
+curl -s "http://faostat.fao.org/site/384/default.aspx" > table.html 
 grep "</td><td>" table.html | sed 's/</>/g' | cut -d'>' -f7,15 > code.txt
 #function
 function dldataName() {
 	itemcode=$(grep $1 code.txt | cut -d'>' -f1)
-	wget "http://data.un.org/Handlers/DownloadHandler.ashx?DataFilter=itemCode:$itemcode
+	curl -s "http://data.un.org/Handlers/DownloadHandler.ashx?DataFilter=itemCode:$itemcode
 &DataMartId=FAO&Format=csv&c=2,3,4,5,6,7&s=countryName:asc,elementCode:asc,
-year:desc" -O $1.zip
+year:desc" -o $1.zip
 	unzip -p $1.zip 
 }
 #Example
-dldataName Apricots
+dldataName Apricots | head -n5
 @
 
 2. To address the problem, I think that I have to examine the source
@@ -163,12 +169,11 @@ I stored the output into a variable called \textbf{dowload}. and then
 write a for loop to download files as well as print out which file
 I am downloading now. 
 
-<<function2, engine='bash', eval=FALSE>>=
+<<function2, engine='bash'>>=
 #Get html
-wget "http://www1.ncdc.noaa.gov/pub/data/ghcn/daily/" -O - > allhtml.txt
+curl -s "http://www1.ncdc.noaa.gov/pub/data/ghcn/daily/" > allhtml.txt
 
 #See pattern
-grep ".txt" allhtml.txt
 grep ".txt" allhtml.txt | head -n1
 
 #Make a variable 
@@ -177,16 +182,18 @@ download=$(grep ".txt" allhtml.txt | cut -d'"' -f8)
 #For loop
 for file in $download 	
 do  echo "Download $file now" 	
-	wget "http://www1.ncdc.noaa.gov/pub/data/ghcn/daily/$file" 
+	curl -s "http://www1.ncdc.noaa.gov/pub/data/ghcn/daily/$file" -o $file
 done
 @
 
-3.
+\newpage{}The height of the water level in Lake Huron fluctuates
+over time. Here I \textquoteright analyze\textquoteright{} the variation
+using R. I show a histogram of the lake levels for the period \Sexpr{attributes(LakeHuron)$tsp[1]}
+to \Sexpr{attributes(LakeHuron)$tsp[2]}.
 
 <<r>>=
 hist(LakeHuron) 
 lowHi <- c(which.min(LakeHuron), which.max(LakeHuron))
-attributes(LakeHuron)
 attributes(LakeHuron)$tsp[1] - 1 + lowHi
 @
 \end{document}
