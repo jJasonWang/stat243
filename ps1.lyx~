@@ -192,9 +192,17 @@ status open
 
 \begin_layout Plain Layout
 
-curl -s "http://data.un.org/Handlers/DownloadHandler.ashx?DataFilter=itemCode:526&D
-ataMartId=FAO&Format=csv&c=2,3,4,5,6,7&s=countryName:asc,elementCode:asc,year:de
-sc" -osS apricots.zip 
+curl -s "http://data.un.org/Handlers/DownloadHandler.ashx?DataFilter=itemCode:526
+\end_layout
+
+\begin_layout Plain Layout
+
+&DataMartId=FAO&Format=csv&c=2,3,4,5,6,7&s=countryName:asc,elementCode:asc,
+\end_layout
+
+\begin_layout Plain Layout
+
+year:desc" -osS apricots.zip 
 \end_layout
 
 \begin_layout Plain Layout
@@ -493,7 +501,12 @@ grep
 "2005
 \backslash
 " countries.csv | grep "Area Harvested" | sort -nr -t'"' -k12 | head -n5
- | cut -d'"' -f2 
+ |
+\end_layout
+
+\begin_layout Plain Layout
+
+cut -d'"' -f2 
 \end_layout
 
 \begin_layout Plain Layout
@@ -532,7 +545,12 @@ function rankAH() {
 "$1
 \backslash
 " countries.csv | grep "Area Harvested" | sort -nr -t'"' -k12 | head -n5
- | cut -d'"' -f2  
+ |
+\end_layout
+
+\begin_layout Plain Layout
+
+cut -d'"' -f2  
 \end_layout
 
 \begin_layout Plain Layout
@@ -542,7 +560,12 @@ function rankAH() {
 
 \begin_layout Plain Layout
 
-#1965, 1975, 1985, 1995 
+#1965, 1975, 1985, 1995
+\end_layout
+
+\begin_layout Plain Layout
+
+echo 1965
 \end_layout
 
 \begin_layout Plain Layout
@@ -552,31 +575,27 @@ rankAH 1965
 
 \begin_layout Plain Layout
 
+echo 1975
+\end_layout
+
+\begin_layout Plain Layout
+
 rankAH 1975 
 \end_layout
 
 \begin_layout Plain Layout
 
-rankAH 1985 
+echo 1985
 \end_layout
 
 \begin_layout Plain Layout
 
-@
+rankAH 1985
 \end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
 
 \begin_layout Plain Layout
 
-<<1995, engine='bash'>>=
+echo 1995
 \end_layout
 
 \begin_layout Plain Layout
@@ -638,9 +657,17 @@ function dldata() {
 
 \begin_layout Plain Layout
 
-	curl -s "http://data.un.org/Handlers/DownloadHandler.ashx?DataFilter=itemCode:$1&D
-ataMartId=FAO&Format=csv&c=2,3,4,5,6,7&s=countryName:asc,elementCode:asc,year:de
-sc" -o $1.zip 
+	curl -s "http://data.un.org/Handlers/DownloadHandler.ashx?DataFilter=itemCode:$1
+\end_layout
+
+\begin_layout Plain Layout
+
+&DataMartId=FAO&Format=csv&c=2,3,4,5,6,7&s=countryName:asc,elementCode:asc,
+\end_layout
+
+\begin_layout Plain Layout
+
+year:desc" -o $1.zip 
 \end_layout
 
 \begin_layout Plain Layout
@@ -959,7 +986,7 @@ do  echo "Download $file now"
 
 \begin_layout Plain Layout
 
-	curl "http://www1.ncdc.noaa.gov/pub/data/ghcn/daily/$file" -o $file
+	curl -s "http://www1.ncdc.noaa.gov/pub/data/ghcn/daily/$file" -o $file
 \end_layout
 
 \begin_layout Plain Layout
@@ -984,10 +1011,32 @@ done
 The height of the water level in Lake Huron fluctuates over time.
  Here I ’analyze’ the variation using R.
  I show a histogram of the lake levels for the period 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
 \backslash
-Sexpr{attributes(LakeHuron)$tsp[1]} to 
+Sexpr{attributes(LakeHuron)$tsp[1]}
+\end_layout
+
+\end_inset
+
+ to 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
 \backslash
-Sexpr{attributes(LakeHuron)$tsp[2]}.
+Sexpr{attributes(LakeHuron)$tsp[2]}
+\end_layout
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard

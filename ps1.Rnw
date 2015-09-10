@@ -160,14 +160,13 @@ txt file. After that I can use a for loop to download those files.
 In the for loop, I can write a command to print out which file is
 downloading.
 
-I use \textbf{wget} to get the html code. \textbf{-O - }is to get
-the standard out which I can store in a txt file, called \textbf{allhtml.txt}.
-When I saw the output of \textbf{grep ``.txt'' allhtml.txt}, I found
-that the file name is between two \textbf{``}. Therefore, I can use
-\textbf{``} to delimit the data and get out the name by command \textbf{cut}.
-I stored the output into a variable called \textbf{dowload}. and then
-write a for loop to download files as well as print out which file
-I am downloading now. 
+I use \textbf{curl} to get the html and store in a txt file, called
+\textbf{allhtml.txt}. When I saw the output of \textbf{grep ``.txt''
+allhtml.txt}, I found that the file name is between two \textbf{``}.
+Therefore, I can use \textbf{``} to delimit the data and get out
+the name by command \textbf{cut}. I stored the output into a variable
+called \textbf{dowload}. and then write a for loop to download files
+as well as print out which file I am downloading now. 
 
 <<function2, engine='bash'>>=
 #Get html

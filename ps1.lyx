@@ -862,14 +862,9 @@ dldataName Apricots | head -n5
 \begin_layout Standard
 I use 
 \series bold
-wget
+curl
 \series default
- to get the html code.
- 
-\series bold
--O - 
-\series default
-is to get the standard out which I can store in a txt file, called 
+ to get the html and store in a txt file, called 
 \series bold
 allhtml.txt
 \series default
