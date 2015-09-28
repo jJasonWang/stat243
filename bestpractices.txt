@@ -1,0 +1,11 @@
+These comments and questions are from the article written by Milman and Perez.
+
+Comments
+The article breaks down the computational research cycle into difference steps which make me understand the problem it mentioned. For example, I learned Git last year; however, without participating in an open project, I haven¡¦t use the most powerful part of it. 
+In the chapter3, the authors illustrate several ideas such as version control and testing to tell us how important those tools or practice and how they will influence the workflow of computational research. Not only can they make the big project run successfully, but also benefit some daily routines.
+The authors take the open source project, IPython, as an example to show how we can utilize tools and procedure to improve the computation scientific work. It makes their points more clear and convincing to reader.
+
+Questions
+1. Will it be better if we have a united and compulsory for computational work to obey?
+2. Is there any suggested learning path for students to acquire skills for each tool?
+3. What may be the drawback for using the tools or practices mentioned in article?
