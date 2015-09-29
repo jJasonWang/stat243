@@ -1,0 +1,3189 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\begin_modules
+knitr
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 3cm
+\topmargin 2.54cm
+\rightmargin 3cm
+\bottommargin 2.54cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+STAT243 Problem Set2
+\end_layout
+
+\begin_layout Author
+Name: Chih Hui Wang SID: 26955255
+\end_layout
+
+\begin_layout Date
+September 28, 2015
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<setup, include=FALSE>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+knitr::opts_chunk$set(fig.align='center')
+\end_layout
+
+\begin_layout Plain Layout
+
+knitr::opts_chunk$set(comment="") 
+\end_layout
+
+\begin_layout Plain Layout
+
+knitr::opts_chunk$set(fig.width=5, fig.height=5)   
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+2.
+ (a) I use the function in package 
+\series bold
+XML
+\series default
+ to get the first of three debates' links for 1996, 2000, 2004, 2008, 2012.
+ I pull out the node with html tag <a herf ...> and get their name and attributes
+ by 
+\series bold
+xmlValue
+\series default
+ and 
+\series bold
+xmlGetAttr
+\series default
+.
+ Then, I can use 
+\series bold
+grep
+\series default
+ function to search the word 
+\begin_inset Quotes eld
+\end_inset
+
+First
+\begin_inset Quotes erd
+\end_inset
+
+ in name and each year in link to find out those links' positions and store
+ them into variable 
+\series bold
+link_want
+\series default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<first_link>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(XML)
+\end_layout
+
+\begin_layout Plain Layout
+
+#Get the html 
+\end_layout
+
+\begin_layout Plain Layout
+
+html <- htmlParse("http://www.debates.org/index.php?page=debate-transcripts")
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Take out the node with link  
+\end_layout
+
+\begin_layout Plain Layout
+
+node <- getNodeSet(html, "//a[@href]")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Retrieve the Link 
+\end_layout
+
+\begin_layout Plain Layout
+
+weblink <- sapply(node, xmlGetAttr, "href") 
+\end_layout
+
+\begin_layout Plain Layout
+
+#Pull out name of the link 
+\end_layout
+
+\begin_layout Plain Layout
+
+name <- sapply(node, xmlValue)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#All the link whose name contain First 
+\end_layout
+
+\begin_layout Plain Layout
+
+first_debate_link <- weblink[grep("First", name)] 
+\end_layout
+
+\begin_layout Plain Layout
+
+#Get the year we want 
+\end_layout
+
+\begin_layout Plain Layout
+
+link_want <- first_debate_link[grep("1996|2000|2004|2008|2012", first_debate_lin
+k)]
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+link_want
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+(b) To print the debate script, first we have to get the texts in each link
+ and then output them by cat function.
+ However, the text for 2012 is tagged by <p> while others are tagged by
+ <br>.
+ Therefore, I take different procedures for each situation.
+ For 2012, the way to get the text is similar to the one in (a).
+ For other years, I first use 
+\series bold
+readLines
+\series default
+ to get all the html file and then 
+\series bold
+grep
+\series default
+ by <br/><br/> to get texts.
+ For both method, I remove all the irrelevant word in the beginning and
+ end.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<debateprint>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#(b) 
+\end_layout
+
+\begin_layout Plain Layout
+
+debate_printout <- function(year){   
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Get the link of the specific year   
+\end_layout
+
+\begin_layout Plain Layout
+
+  link <- link_want[grep(year, link_want)]      
+\end_layout
+
+\begin_layout Plain Layout
+
+  if(year == 2012){     
+\end_layout
+
+\begin_layout Plain Layout
+
+    html_year <- htmlParse(link)     
+\end_layout
+
+\begin_layout Plain Layout
+
+    #Get the spoken text     
+\end_layout
+
+\begin_layout Plain Layout
+
+    script <- xpathSApply(html_year, "//p", xmlValue)     
+\end_layout
+
+\begin_layout Plain Layout
+
+    #Remove the irrelevant words in the beginning and end     
+\end_layout
+
+\begin_layout Plain Layout
+
+    script <- script[grep(":", script)[1]:(length(script) - 2)]
+\end_layout
+
+\begin_layout Plain Layout
+
+  }else{     
+\end_layout
+
+\begin_layout Plain Layout
+
+    #Get the all html     
+\end_layout
+
+\begin_layout Plain Layout
+
+    script <- readLines(link)
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\end_layout
+
+\begin_layout Plain Layout
+
+    #Get the spoken context     
+\end_layout
+
+\begin_layout Plain Layout
+
+    script <- script[grep("<br/><br/>", script)]     
+\end_layout
+
+\begin_layout Plain Layout
+
+    #Sepearate the text by <br/><br/> to get the sentences     
+\end_layout
+
+\begin_layout Plain Layout
+
+    script <- unlist(strsplit(script, "<br/><br/>")) 
+\end_layout
+
+\begin_layout Plain Layout
+
+   
+\end_layout
+
+\begin_layout Plain Layout
+
+    #Remove irrelevant html tag     
+\end_layout
+
+\begin_layout Plain Layout
+
+    script <- script[-grep("</?p>|<br/>", script)]     
+\end_layout
+
+\begin_layout Plain Layout
+
+    #Remove irrelevant words in the beginning     
+\end_layout
+
+\begin_layout Plain Layout
+
+    script <- script[grep(":", script)[1]:length(script)]   
+\end_layout
+
+\begin_layout Plain Layout
+
+  }      
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Replace words like (Laughter), (crosstalk)...
+   
+\end_layout
+
+\begin_layout Plain Layout
+
+  script <- gsub("
+\backslash
+
+\backslash
+([[:alpha:]]+
+\backslash
+
+\backslash
+)", "", script)
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Remove the ""   
+\end_layout
+
+\begin_layout Plain Layout
+
+  script <- script[script != ""]
+\end_layout
+
+\begin_layout Plain Layout
+
+     
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Ouput the result   
+\end_layout
+
+\begin_layout Plain Layout
+
+  cat(script, sep="
+\backslash
+n")
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+(c) To make those texts in a row into same chunk, first I have to obtain
+ the script.
+ I do a little adjustment from the function in (a).
+ To get a better script, I seperate the 2004(for the introduction of speakers)
+ and 2008(for the repeated text) to do some processes.
+ The output will give user the debate text from the website without any
+ other unnecessary words in it.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<text_chunk>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#(c)
+\end_layout
+
+\begin_layout Plain Layout
+
+debate_script <- function(year){   
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Get the link of the specific year   
+\end_layout
+
+\begin_layout Plain Layout
+
+  link <- link_want[grep(year, link_want)]
+\end_layout
+
+\begin_layout Plain Layout
+
+     
+\end_layout
+
+\begin_layout Plain Layout
+
+  if(year == 2012){     
+\end_layout
+
+\begin_layout Plain Layout
+
+    html_year <- htmlParse(link)    
+\end_layout
+
+\begin_layout Plain Layout
+
+    #Get the spoken text     
+\end_layout
+
+\begin_layout Plain Layout
+
+    script <- xpathSApply(html_year, "//p", xmlValue)
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\end_layout
+
+\begin_layout Plain Layout
+
+    #Remove the irrelevant words in the beginning and end     
+\end_layout
+
+\begin_layout Plain Layout
+
+    script <- script[grep(":", script)[2]:(length(script) - 2)] 
+\end_layout
+
+\begin_layout Plain Layout
+
+  }else{     
+\end_layout
+
+\begin_layout Plain Layout
+
+    #Get the all html     
+\end_layout
+
+\begin_layout Plain Layout
+
+    script <- readLines(link)
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\end_layout
+
+\begin_layout Plain Layout
+
+    #Get the spoken context     
+\end_layout
+
+\begin_layout Plain Layout
+
+    script <- script[grep("<br/><br/>", script)]
+\end_layout
+
+\begin_layout Plain Layout
+
+    #Sepearate the text by <br/><br/> to get the sentences     
+\end_layout
+
+\begin_layout Plain Layout
+
+    script <- unlist(strsplit(script, "<br/><br/>"))
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\end_layout
+
+\begin_layout Plain Layout
+
+    #Remove irrelevant html tag     
+\end_layout
+
+\begin_layout Plain Layout
+
+    script <- script[-grep("</?p>", script)]     
+\end_layout
+
+\begin_layout Plain Layout
+
+    #Remove irrelevant words in the beginning    
+\end_layout
+
+\begin_layout Plain Layout
+
+    script <- script[grep(":", script)[1]:length(script)]
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\end_layout
+
+\begin_layout Plain Layout
+
+    if(year == 2004){       
+\end_layout
+
+\begin_layout Plain Layout
+
+      script <- script[grep(":", script)[2]:length(script)]     
+\end_layout
+
+\begin_layout Plain Layout
+
+    }else if(year == 2008){       
+\end_layout
+
+\begin_layout Plain Layout
+
+    script <- script[grep(":", script)[2]:(grep("END", script)[1] - 1)]
+     
+\end_layout
+
+\begin_layout Plain Layout
+
+    }   
+\end_layout
+
+\begin_layout Plain Layout
+
+  }
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Remove the transcription   
+\end_layout
+
+\begin_layout Plain Layout
+
+  script[grep("Transcription", script)] <- ""
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Remove the ""   
+\end_layout
+
+\begin_layout Plain Layout
+
+  script <- script[script != ""]      
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  #result   
+\end_layout
+
+\begin_layout Plain Layout
+
+  script    
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+#Script for each year 
+\end_layout
+
+\begin_layout Plain Layout
+
+script_2012 <- debate_script(2012) 
+\end_layout
+
+\begin_layout Plain Layout
+
+script_2008 <- debate_script(2008) 
+\end_layout
+
+\begin_layout Plain Layout
+
+script_2004 <- debate_script(2004) 
+\end_layout
+
+\begin_layout Plain Layout
+
+script_2000 <- debate_script(2000) 
+\end_layout
+
+\begin_layout Plain Layout
+
+script_1996 <- debate_script(1996)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+With the script, I can then do some processes to make those text spoken
+ in a row and by the same people into one chunk.
+ My strategy is that I find out the speakers of debates, make a vector with
+ same length as texts and then use them as a reference to decide whether
+ chunks should be merge or not.
+ After finishing the merge chunk steps, I start count the number of applause
+ and laughter in each chunk and also get the speakers name by pull out the
+ first word after splitting by 
+\begin_inset Quotes eld
+\end_inset
+
+:
+\begin_inset Quotes erd
+\end_inset
+
+.
+ In the end, I remove those unspoken text and output the text as well as
+ the summary as a list.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<text_chunk2>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#Process to make chunk text 
+\end_layout
+
+\begin_layout Plain Layout
+
+text_chunk <- function(script){   
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Figure out the sentence with colon   
+\end_layout
+
+\begin_layout Plain Layout
+
+  withcolon <- grep(":", script)
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Count the number of the words befroe colon   
+\end_layout
+
+\begin_layout Plain Layout
+
+  tcolon <- table(sapply(strsplit(script[withcolon], "
+\backslash
+
+\backslash
+:"), "[[", 1))
+\end_layout
+
+\begin_layout Plain Layout
+
+     
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Get the name   
+\end_layout
+
+\begin_layout Plain Layout
+
+  name <- names(tcolon[tcolon > 2])   
+\end_layout
+
+\begin_layout Plain Layout
+
+  first <- name[1]; second <- name[2]; third <- name[3]  
+\end_layout
+
+\begin_layout Plain Layout
+
+   
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Determine which chunk should each sentence belong to   
+\end_layout
+
+\begin_layout Plain Layout
+
+  chunk_n <- rep(0, length(script))   
+\end_layout
+
+\begin_layout Plain Layout
+
+  chunk_n[grep(paste(first, ":", sep=""), script)] <- 1   
+\end_layout
+
+\begin_layout Plain Layout
+
+  chunk_n[grep(paste(second, ":", sep=""), script)] <- 2   
+\end_layout
+
+\begin_layout Plain Layout
+
+  chunk_n[grep(paste(third, ":", sep=""), script)] <- 3      
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Merge two chunk with same speaker   
+\end_layout
+
+\begin_layout Plain Layout
+
+  script_character <- rep("0", sum(diff(chunk_n) != 0))   
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Initial Value   
+\end_layout
+
+\begin_layout Plain Layout
+
+  j <- 1   
+\end_layout
+
+\begin_layout Plain Layout
+
+  script_character[1] <- script[1]   
+\end_layout
+
+\begin_layout Plain Layout
+
+  l <- chunk_n[1]      
+\end_layout
+
+\begin_layout Plain Layout
+
+  for(i in 2:length(chunk_n)){     
+\end_layout
+
+\begin_layout Plain Layout
+
+    if(chunk_n[i] != 0){       
+\end_layout
+
+\begin_layout Plain Layout
+
+      if(chunk_n[i] == l){         
+\end_layout
+
+\begin_layout Plain Layout
+
+        sentence <- gsub(paste(name, ":", sep="", collapse="|"), "", script[i])
+         
+\end_layout
+
+\begin_layout Plain Layout
+
+        script_character[j] <- paste(script_character[j], sentence)
+\end_layout
+
+\begin_layout Plain Layout
+
+      }else{         
+\end_layout
+
+\begin_layout Plain Layout
+
+        j <- j + 1         
+\end_layout
+
+\begin_layout Plain Layout
+
+        sentence <- script[i]         
+\end_layout
+
+\begin_layout Plain Layout
+
+        script_character[j] <- sentence         
+\end_layout
+
+\begin_layout Plain Layout
+
+        l <- chunk_n[i]       
+\end_layout
+
+\begin_layout Plain Layout
+
+      }     
+\end_layout
+
+\begin_layout Plain Layout
+
+    }else{       
+\end_layout
+
+\begin_layout Plain Layout
+
+      sentence <- script[i]       
+\end_layout
+
+\begin_layout Plain Layout
+
+      script_character[j] <- paste(script_character[j], sentence)
+\end_layout
+
+\begin_layout Plain Layout
+
+    }   
+\end_layout
+
+\begin_layout Plain Layout
+
+  } 
+\end_layout
+
+\begin_layout Plain Layout
+
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Remove unused space   
+\end_layout
+
+\begin_layout Plain Layout
+
+  chunk <- script_character[script_character != "0"]
+\end_layout
+
+\begin_layout Plain Layout
+
+     
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Count the word LAUGHTER and APPLAUSE   
+\end_layout
+
+\begin_layout Plain Layout
+
+  laughter <- sapply(strsplit(chunk[grep("
+\backslash
+
+\backslash
+(LAUGHTER
+\backslash
+
+\backslash
+)", chunk)], ":"), "[[", 1)   
+\end_layout
+
+\begin_layout Plain Layout
+
+  applause <- sapply(strsplit(chunk[grep("
+\backslash
+
+\backslash
+(APPLAUSE
+\backslash
+
+\backslash
+)", chunk)], ":"), "[[", 1)
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  summary_data <- data.frame(
+\end_layout
+
+\begin_layout Plain Layout
+
+  one=c(sum(laughter == first), sum(applause == first)),
+\end_layout
+
+\begin_layout Plain Layout
+
+  two=c(sum(laughter == second), sum(applause == second)),
+\end_layout
+
+\begin_layout Plain Layout
+
+  three=c(sum(laughter == third), sum(applause == third))
+\end_layout
+
+\begin_layout Plain Layout
+
+  )
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  names(summary_data) <- name   
+\end_layout
+
+\begin_layout Plain Layout
+
+  row.names(summary_data) <- c("LAUGHTER", "APPLAUSE") 
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Remove the non-spoken text   
+\end_layout
+
+\begin_layout Plain Layout
+
+  chunk <- gsub("
+\backslash
+
+\backslash
+([[:alpha:]]+
+\backslash
+
+\backslash
+)", "", chunk)    
+\end_layout
+
+\begin_layout Plain Layout
+
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Output   
+\end_layout
+
+\begin_layout Plain Layout
+
+  output <- list()   
+\end_layout
+
+\begin_layout Plain Layout
+
+  output$Spoken_text <- chunk    
+\end_layout
+
+\begin_layout Plain Layout
+
+  output$summary <- summary_data   
+\end_layout
+
+\begin_layout Plain Layout
+
+  output 
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Chunk text for each year 
+\end_layout
+
+\begin_layout Plain Layout
+
+chunk_2012 <- text_chunk(script_2012) 
+\end_layout
+
+\begin_layout Plain Layout
+
+chunk_2008 <- text_chunk(script_2008) 
+\end_layout
+
+\begin_layout Plain Layout
+
+chunk_2004 <- text_chunk(script_2004) 
+\end_layout
+
+\begin_layout Plain Layout
+
+chunk_2000 <- text_chunk(script_2000) 
+\end_layout
+
+\begin_layout Plain Layout
+
+chunk_1996 <- text_chunk(script_1996)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#script
+\end_layout
+
+\begin_layout Plain Layout
+
+head(chunk_2004$Spoken_text[[1]])
+\end_layout
+
+\begin_layout Plain Layout
+
+#summary
+\end_layout
+
+\begin_layout Plain Layout
+
+chunk_2004$summary
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+(d) To deal with the questions after (d), I think it will be more appropriate
+ to stroe all speaker's words into each chunk, which means that the data
+ will have three chunk(three character vector in a list).
+ Therefore, I rewrite the function in (c) to make a speaker's words merge
+ only into one chunk.
+ With the same strategy of using the reference, for those words speaker
+ by first person, I will store it into one chunk.
+ The output will be a list.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<sentence_word>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#(d)
+\end_layout
+
+\begin_layout Plain Layout
+
+text_chunk_combine <- function(script){   
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Figure out the sentence with colon   
+\end_layout
+
+\begin_layout Plain Layout
+
+  withcolon <- grep(":", script)
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Count the number of the words befroe colon   
+\end_layout
+
+\begin_layout Plain Layout
+
+  tcolon <- table(sapply(strsplit(script[withcolon], "
+\backslash
+
+\backslash
+:"), "[[", 1))
+\end_layout
+
+\begin_layout Plain Layout
+
+     
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Get the name   
+\end_layout
+
+\begin_layout Plain Layout
+
+  name <- names(tcolon[tcolon > 2])   
+\end_layout
+
+\begin_layout Plain Layout
+
+  first <- name[1]; second <- name[2]; third <- name[3]      
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Determine which chunk should each sentence belong to   
+\end_layout
+
+\begin_layout Plain Layout
+
+  chunk_n <- rep(0, length(script))   
+\end_layout
+
+\begin_layout Plain Layout
+
+  chunk_n[grep(paste(first, ":", sep=""), script)] <- 1   
+\end_layout
+
+\begin_layout Plain Layout
+
+  chunk_n[grep(paste(second, ":", sep=""), script)] <- 2   
+\end_layout
+
+\begin_layout Plain Layout
+
+  chunk_n[grep(paste(third, ":", sep=""), script)] <- 3
+\end_layout
+
+\begin_layout Plain Layout
+
+     
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Skip first one for speakers   
+\end_layout
+
+\begin_layout Plain Layout
+
+  for(i in 2:length(chunk_n)){     
+\end_layout
+
+\begin_layout Plain Layout
+
+    if(chunk_n[i] == 0){       
+\end_layout
+
+\begin_layout Plain Layout
+
+      chunk_n[i] <- chunk_n[i - 1]     
+\end_layout
+
+\begin_layout Plain Layout
+
+    }   
+\end_layout
+
+\begin_layout Plain Layout
+
+  }
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Put them into list as well as remove the redundant words   
+\end_layout
+
+\begin_layout Plain Layout
+
+  chunk <- list(
+\end_layout
+
+\begin_layout Plain Layout
+
+  first=gsub(paste(first, ": ", sep=""), "", script[chunk_n == 1]),
+\end_layout
+
+\begin_layout Plain Layout
+
+  second=gsub(paste(second, ": ", sep=""), "", script[chunk_n == 2]),
+\end_layout
+
+\begin_layout Plain Layout
+
+  thrid=gsub(paste(third, ": ", sep=""), "", script[chunk_n == 3])
+\end_layout
+
+\begin_layout Plain Layout
+
+  )   
+\end_layout
+
+\begin_layout Plain Layout
+
+  names(chunk) <- name
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Combine all the sentences into one string   
+\end_layout
+
+\begin_layout Plain Layout
+
+  chunk <- lapply(chunk, function(x) paste(x, collapse=" "))      
+\end_layout
+
+\begin_layout Plain Layout
+
+  chunk <- lapply(chunk, function(x) gsub("<br/>", "", x))
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Remove the non-spoken text   
+\end_layout
+
+\begin_layout Plain Layout
+
+  chunk <- lapply(chunk, function(x) gsub("
+\backslash
+
+\backslash
+([[:alpha:]]+
+\backslash
+
+\backslash
+)", "", x))      
+\end_layout
+
+\begin_layout Plain Layout
+
+  chunk 
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+chunk_2012_combine <- text_chunk_combine(script_2012) 
+\end_layout
+
+\begin_layout Plain Layout
+
+chunk_2008_combine <- text_chunk_combine(script_2008) 
+\end_layout
+
+\begin_layout Plain Layout
+
+chunk_2004_combine <- text_chunk_combine(script_2004) 
+\end_layout
+
+\begin_layout Plain Layout
+
+chunk_2000_combine <- text_chunk_combine(script_2000) 
+\end_layout
+
+\begin_layout Plain Layout
+
+chunk_1996_combine <- text_chunk_combine(script_1996) 
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Then I split three character vectors in the list into sentence.
+ I replace with period, question mark, exclaimation into period, question
+ mark, exclaimation@.
+ By doing so, I can use @ as a seperator to split each sentence.
+ However, there will be some cases which should not be splitted into sentence
+ like Mr.@.
+ After replace those words back into origin like Mr., I use the split to
+ get the sentence.
+ To unlist what we get from the function and remove the empty and space,
+ we will have a character vector which each element is a sentence.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<sentence>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#one element per sentence 
+\end_layout
+
+\begin_layout Plain Layout
+
+sentence_data <- function(chunk){   
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Deal with period, question mark, exclaimation   
+\end_layout
+
+\begin_layout Plain Layout
+
+  chunk_process1 <- unlist(lapply(chunk, gsub, pattern="
+\backslash
+
+\backslash
+.
+ ", replacement=".@ "))   
+\end_layout
+
+\begin_layout Plain Layout
+
+  chunk_process1 <- gsub(pattern="
+\backslash
+
+\backslash
+? ", replacement="?@ ", chunk_process1)  
+\end_layout
+
+\begin_layout Plain Layout
+
+  chunk_process1 <- gsub(pattern="
+\backslash
+
+\backslash
+! ", replacement="!@ ", chunk_process1)      
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Change Mr back   
+\end_layout
+
+\begin_layout Plain Layout
+
+  chunk_process2 <- gsub(pattern="Mr.@", replacement="Mr.", chunk_process1)
+      
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Split the Sentence   
+\end_layout
+
+\begin_layout Plain Layout
+
+  strsplit(chunk_process2, "@ ") 
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+sentence_2012 <- unlist(sentence_data(chunk_2012_combine)) 
+\end_layout
+
+\begin_layout Plain Layout
+
+#Remove space and empty 
+\end_layout
+
+\begin_layout Plain Layout
+
+sentence_2012 <- sentence_2012[! sentence_2012 %in% c("", " ")]
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+sentence_2008 <- unlist(sentence_data(chunk_2008_combine)) 
+\end_layout
+
+\begin_layout Plain Layout
+
+sentence_2008 <- sentence_2008[! sentence_2008 %in% c("", " ")]
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+sentence_2004 <- unlist(sentence_data(chunk_2004_combine)) 
+\end_layout
+
+\begin_layout Plain Layout
+
+sentence_2004 <- sentence_2004[! sentence_2004 %in% c("", " ")]
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+sentence_2000 <- unlist(sentence_data(chunk_2000_combine)) 
+\end_layout
+
+\begin_layout Plain Layout
+
+sentence_2000 <- sentence_2000[! sentence_2000 %in% c("", " ")]
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+sentence_1996 <- unlist(sentence_data(chunk_1996_combine)) 
+\end_layout
+
+\begin_layout Plain Layout
+
+sentence_1996 <- sentence_2012[! sentence_1996 %in% c("", " ")] 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+head(sentence_2012) 
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+To get a character vector which its element is one word, I first remove
+ all the punctuation and then split word by space to get words.
+ Befroe outputting the result, I remove those element containing nothing.
+ By unlisting the output of the function, we can get the words vector.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<word_data>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+word_data <- function(chunk){   
+\end_layout
+
+\begin_layout Plain Layout
+
+  chunk <- unlist(lapply(chunk, gsub, pattern="
+\backslash
+
+\backslash
+.|,|
+\backslash
+
+\backslash
+?|
+\backslash
+
+\backslash
+-", replacement=""))   
+\end_layout
+
+\begin_layout Plain Layout
+
+  chunk_word <- strsplit(chunk, " ")
+\end_layout
+
+\begin_layout Plain Layout
+
+  chunk_word <- lapply(chunk_word, function(x) x[x != ""])     
+\end_layout
+
+\begin_layout Plain Layout
+
+  chunk_word 
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+word_2012 <- unlist(word_data(chunk_2012_combine)) 
+\end_layout
+
+\begin_layout Plain Layout
+
+word_2008 <- unlist(word_data(chunk_2008_combine)) 
+\end_layout
+
+\begin_layout Plain Layout
+
+word_2004 <- unlist(word_data(chunk_2004_combine)) 
+\end_layout
+
+\begin_layout Plain Layout
+
+word_2000 <- unlist(word_data(chunk_2000_combine)) 
+\end_layout
+
+\begin_layout Plain Layout
+
+word_1996 <- unlist(word_data(chunk_1996_combine)) 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+head(word_2012)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+(e) To count the average word length, I utilize the function 
+\series bold
+word_data
+\series default
+ to get the words by each speaker(a list).
+ Then I use the 
+\series bold
+nchar
+\series default
+ and 
+\series bold
+mean
+\series default
+ function to compute the words length.
+\end_layout
+
+\begin_layout Standard
+All of the speakers' average word length are around 4.5.
+ The word length of moderator, Lehrer, haven't change a lot.
+ The word length of candidate tend to be more shorter than the moderator.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<wordlength>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#(e)
+\end_layout
+
+\begin_layout Plain Layout
+
+ave_word_count <- function(chunk){   
+\end_layout
+
+\begin_layout Plain Layout
+
+  chunk_word <- word_data(chunk)  
+\end_layout
+
+\begin_layout Plain Layout
+
+  round(sapply(sapply(chunk_word, nchar), mean), 4)    
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ave_word_count(chunk_2012_combine)
+\end_layout
+
+\begin_layout Plain Layout
+
+ave_word_count(chunk_2008_combine)
+\end_layout
+
+\begin_layout Plain Layout
+
+ave_word_count(chunk_2004_combine)
+\end_layout
+
+\begin_layout Plain Layout
+
+ave_word_count(chunk_2000_combine)
+\end_layout
+
+\begin_layout Plain Layout
+
+ave_word_count(chunk_1996_combine)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+(f) To find pattern in the word of each speaker, my function have two argument,
+ 
+\series bold
+chunk
+\series default
+ and 
+\series bold
+p
+\series default
+.
+ 
+\series bold
+p
+\series default
+ let users to input any pattern in a regular expression way they want to
+ detect.
+ To deal with the problem of God and God bless, I allow users to input a
+ vector which its length is 3.
+ The first and second element are the phrase they want to find, while the
+ thrid element is to decide which kind of match they want.
+ If the thrid argument is First, then the function will find the first element
+ only(not followed by second element).
+ If the argument is not First, then it will output the occurrence of matching
+ the phrase(in this case, it will find the number of occurrence for God
+ bless).
+ With the function, I can use 
+\series bold
+sapply
+\series default
+ to do the operation for each speakers' word.
+ For 
+\begin_inset Quotes eld
+\end_inset
+
+I
+\begin_inset Quotes erd
+\end_inset
+
+, I search 
+\begin_inset Quotes eld
+\end_inset
+
+I
+\begin_inset Quotes erd
+\end_inset
+
+ as well as 
+\begin_inset Quotes eld
+\end_inset
+
+I'
+\begin_inset Quotes erd
+\end_inset
+
+ to catch the word like 
+\begin_inset Quotes eld
+\end_inset
+
+I'll
+\begin_inset Quotes erd
+\end_inset
+
+.
+ For 
+\begin_inset Quotes eld
+\end_inset
+
+We
+\begin_inset Quotes erd
+\end_inset
+
+, I search 
+\begin_inset Quotes eld
+\end_inset
+
+We
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+We'
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+we
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+we'.
+ For the rest of words, I just input the word on the problem without any
+ processing.
+\end_layout
+
+\begin_layout Standard
+The winner of the presidential election use more 
+\begin_inset Quotes eld
+\end_inset
+
+I
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+free, freedom
+\begin_inset Quotes erd
+\end_inset
+
+ in the debate.
+ The word 
+\begin_inset Quotes eld
+\end_inset
+
+war
+\begin_inset Quotes erd
+\end_inset
+
+ happens many time in 2004 and 2008(by Obama).
+ For other word, I did not detect any interesting pattern.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<pattern>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#(f)
+\end_layout
+
+\begin_layout Plain Layout
+
+count_word <- function(chunk, p){   
+\end_layout
+
+\begin_layout Plain Layout
+
+  chunk_word <- word_data(chunk)    
+\end_layout
+
+\begin_layout Plain Layout
+
+  if(length(p) == 1){     
+\end_layout
+
+\begin_layout Plain Layout
+
+    sapply(sapply(chunk_word, function(x) grep(pattern=p, x)), length) 
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  }else if (length(p) == 3){     
+\end_layout
+
+\begin_layout Plain Layout
+
+      if(p[3] == "First"){       
+\end_layout
+
+\begin_layout Plain Layout
+
+        f <- function(x){         
+\end_layout
+
+\begin_layout Plain Layout
+
+        in_one <- grep(p[1], x)         
+\end_layout
+
+\begin_layout Plain Layout
+
+        in_one[x[in_one + 1] != p[2]]       
+\end_layout
+
+\begin_layout Plain Layout
+
+        }     
+\end_layout
+
+\begin_layout Plain Layout
+
+      }else{       
+\end_layout
+
+\begin_layout Plain Layout
+
+        f <- function(x){         
+\end_layout
+
+\begin_layout Plain Layout
+
+        in_second <- grep(p[2], x)         
+\end_layout
+
+\begin_layout Plain Layout
+
+        in_second[x[in_second - 1] == p[1]]       
+\end_layout
+
+\begin_layout Plain Layout
+
+      }     
+\end_layout
+
+\begin_layout Plain Layout
+
+    }     
+\end_layout
+
+\begin_layout Plain Layout
+
+    sapply(sapply(chunk_word, f), length)   
+\end_layout
+
+\begin_layout Plain Layout
+
+  } 
+\end_layout
+
+\begin_layout Plain Layout
+
+} 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#I, we, America{,n}, democra{cy,tic}, republic  
+\end_layout
+
+\begin_layout Plain Layout
+
+#Democrat{,ic}, Republican, free{,dom}, war  
+\end_layout
+
+\begin_layout Plain Layout
+
+#God[not including God bless], God Bless  
+\end_layout
+
+\begin_layout Plain Layout
+
+#{Jesus, Christ, Christian} 
+\end_layout
+
+\begin_layout Plain Layout
+
+p <- list("^I$|I'", "^We$|We'|^we$|we'", "American|America",
+\end_layout
+
+\begin_layout Plain Layout
+
+       "democracy|democratic", "republic",
+\end_layout
+
+\begin_layout Plain Layout
+
+       "Democrat|Democratic", "Republican",
+\end_layout
+
+\begin_layout Plain Layout
+
+       c("God", "bless", "First"), c("God", "bless", "Second"),
+\end_layout
+
+\begin_layout Plain Layout
+
+       "free|freedom", "^war$", "Jesus|Christ|Chritian") 
+\end_layout
+
+\begin_layout Plain Layout
+
+data.name <- c("I", "We", "America{,n}",
+\end_layout
+
+\begin_layout Plain Layout
+
+               "democracy{,ic}", "republic",
+\end_layout
+
+\begin_layout Plain Layout
+
+               "Democrat{,ic}", "Republican",
+\end_layout
+
+\begin_layout Plain Layout
+
+               "God[not including God bless]", "God bless",
+\end_layout
+
+\begin_layout Plain Layout
+
+               "free{,dom}", "war", "Jesus|Christ|Chritian")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#1996 
+\end_layout
+
+\begin_layout Plain Layout
+
+table_1996 <- sapply(p, count_word, chunk=chunk_1996_combine) 
+\end_layout
+
+\begin_layout Plain Layout
+
+colnames(table_1996) <- data.name 
+\end_layout
+
+\begin_layout Plain Layout
+
+table_1996 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#2000 
+\end_layout
+
+\begin_layout Plain Layout
+
+table_2000 <- sapply(p, count_word, chunk=chunk_2000_combine) 
+\end_layout
+
+\begin_layout Plain Layout
+
+colnames(table_2000) <- data.name 
+\end_layout
+
+\begin_layout Plain Layout
+
+table_2000 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#2004 
+\end_layout
+
+\begin_layout Plain Layout
+
+table_2004 <- sapply(p, count_word, chunk=chunk_2004_combine) 
+\end_layout
+
+\begin_layout Plain Layout
+
+colnames(table_2004) <- data.name 
+\end_layout
+
+\begin_layout Plain Layout
+
+table_2004 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#2008 
+\end_layout
+
+\begin_layout Plain Layout
+
+table_2008 <- sapply(p, count_word, chunk=chunk_2008_combine) 
+\end_layout
+
+\begin_layout Plain Layout
+
+colnames(table_2008) <- data.name 
+\end_layout
+
+\begin_layout Plain Layout
+
+table_2008 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#2012 
+\end_layout
+
+\begin_layout Plain Layout
+
+table_2012 <- sapply(p, count_word, chunk=chunk_2012_combine) 
+\end_layout
+
+\begin_layout Plain Layout
+
+colnames(table_2012) <- data.name 
+\end_layout
+
+\begin_layout Plain Layout
+
+table_2012
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+3.
+ (a) and (b) For the beginning of the function, I use several 
+\series bold
+if
+\series default
+ statement to check whether the argument is correctly inputed.
+ Then, I create a movement matrix which contain up, down, right, left in
+ each row by two-coordinate.
+ To repeat the sample process, the 
+\series bold
+replicate
+\series default
+ is useful which give me n samples and I can use them to pull out the movement
+ from my matrix.
+ Finally, the function 
+\series bold
+cumsum
+\series default
+ computes the coordinates of each step.
+ With some name processing and output checking, the function will output
+ the whole process by a matrix with n + 1 rows and 2 columns.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<myWalk>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#Problem 3 (a) 
+\end_layout
+
+\begin_layout Plain Layout
+
+myWalk <- function(n, full_path=TRUE){   
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Check whether n is an integer   
+\end_layout
+
+\begin_layout Plain Layout
+
+  if((n %% 1) != 0) stop("Please input an integer")   
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Check whether n is positive   
+\end_layout
+
+\begin_layout Plain Layout
+
+  if(n <= 0) stop("The number of step is negative.
+ Please input a POSITIVE number")   
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Check the full_path input   
+\end_layout
+
+\begin_layout Plain Layout
+
+  if(!is.logical(full_path)) stop("For the argument full_path, you should
+ input TRUE/FALSE")      
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Setup   
+\end_layout
+
+\begin_layout Plain Layout
+
+  up <- c(0, 1); down <- c(0, -1); right <- c(1, 0); left <- c(-1, 0)  
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+  m <- rbind(up, down, right, left); colnames(m) <- c("x1", "x2")      
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Repeat the sample n times and get the row index
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Same as sample(1:4, n, replace=TRUE)  
+\end_layout
+
+\begin_layout Plain Layout
+
+  process <- replicate(n, sample(1:4, 1))   
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Sum cumulatively by column   
+\end_layout
+
+\begin_layout Plain Layout
+
+  path <- cbind(cumsum(m[process, 1]), 
+\end_layout
+
+\begin_layout Plain Layout
+
+                cumsum(m[process, 2]))      
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Change names   
+\end_layout
+
+\begin_layout Plain Layout
+
+  colnames(path) <- c("x1", "x2")   
+\end_layout
+
+\begin_layout Plain Layout
+
+  rownames(path) <- paste("Step", 1:n, sep=" ")      
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Decide Output   
+\end_layout
+
+\begin_layout Plain Layout
+
+  if(full_path){     
+\end_layout
+
+\begin_layout Plain Layout
+
+    path   
+\end_layout
+
+\begin_layout Plain Layout
+
+  }else{     
+\end_layout
+
+\begin_layout Plain Layout
+
+    path[n, ]   
+\end_layout
+
+\begin_layout Plain Layout
+
+  } 
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Demo
+\end_layout
+
+\begin_layout Plain Layout
+
+myWalk(10)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+(c) The function is almost the same as the one in (a).
+ I just add an argument 
+\series bold
+Start
+\series default
+ which gives the location of origin.
+ To be more meanful, I change my element when I do sample from 1~4 to character
+ 
+\begin_inset Quotes eld
+\end_inset
+
+up
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+down
+\begin_inset Quotes erd
+\end_inset
+
+,
+\begin_inset Quotes erd
+\end_inset
+
+right
+\begin_inset Quotes erd
+\end_inset
+
+,
+\begin_inset Quotes erd
+\end_inset
+
+left
+\begin_inset Quotes erd
+\end_inset
+
+.
+ In the last part, I create a list to store all the information of the process
+ and assign it into 
+\series bold
+obj
+\series default
+ and set its class to 
+\series bold
+'rw'
+\series default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<myWalk_rw>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#(c) 
+\end_layout
+
+\begin_layout Plain Layout
+
+myWalk <- function(n, full_path=TRUE, Start=c(0, 0)){
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Check whether n is an integer   
+\end_layout
+
+\begin_layout Plain Layout
+
+  if((n %% 1) != 0) stop("Please input an integer")   
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Check whether n is positive   
+\end_layout
+
+\begin_layout Plain Layout
+
+  if(n <= 0) stop("The number of step is negative.
+ Please input a POSITIVE number")
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Check the full_path input   
+\end_layout
+
+\begin_layout Plain Layout
+
+  if(!is.logical(full_path)) stop("For the argument full_path, you should
+ input TRUE/FALSE")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Start   
+\end_layout
+
+\begin_layout Plain Layout
+
+  path <- matrix(0, nrow=n + 1, ncol=2)   
+\end_layout
+
+\begin_layout Plain Layout
+
+  colnames(path) <- c("x1", "x2")     
+\end_layout
+
+\begin_layout Plain Layout
+
+  path[1, ] <- Start
+\end_layout
+
+\begin_layout Plain Layout
+
+     
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Setup   
+\end_layout
+
+\begin_layout Plain Layout
+
+  up <- c(0, 1); down <- c(0, -1); right <- c(1, 0); left <- c(-1, 0)  
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+  m <- rbind(up, down, right, left); colnames(m) <- c("x1", "x2")      
+     
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Repeat the sample n times and get the row index
+\end_layout
+
+\begin_layout Plain Layout
+
+  process <- replicate(n, sample(c("up", "down", "right", "left"), 1))
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Sum cumulatively by column   
+\end_layout
+
+\begin_layout Plain Layout
+
+  path[-1, ] <- cbind(Start[1] + cumsum(m[process, 1]),
+\end_layout
+
+\begin_layout Plain Layout
+
+                      Start[2] + cumsum(m[process, 2]))      
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Change row  names   
+\end_layout
+
+\begin_layout Plain Layout
+
+  rownames(path) <- c("Start", paste("Step", 1:n, sep=" "))        
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Create object   
+\end_layout
+
+\begin_layout Plain Layout
+
+  obj <- list(Start=Start,               
+\end_layout
+
+\begin_layout Plain Layout
+
+              Process=process,               
+\end_layout
+
+\begin_layout Plain Layout
+
+              End=path[n + 1, ],               
+\end_layout
+
+\begin_layout Plain Layout
+
+              Path=path)   
+\end_layout
+
+\begin_layout Plain Layout
+
+  class(obj) <- "rw"  
+\end_layout
+
+\begin_layout Plain Layout
+
+  obj 
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Demo
+\end_layout
+
+\begin_layout Plain Layout
+
+walk1 <- myWalk(10)
+\end_layout
+
+\begin_layout Plain Layout
+
+walk1
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The print method for class rw will give a brief sentence to let user know
+ where the process start and end.
+ Also, it will give the summary table for occurence of the 4 movement and
+ detailed process in abbreviation of the first letter for movement.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<print>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#print 
+\end_layout
+
+\begin_layout Plain Layout
+
+print.rw <- function(object){   
+\end_layout
+
+\begin_layout Plain Layout
+
+  cat("Origin: (", object$Start[1], ",", object$Start[2], ")", "
+\backslash
+t", sep="")   
+\end_layout
+
+\begin_layout Plain Layout
+
+  cat("End: (", object$End[1], ",", object$End[2], ")", "
+\backslash
+n", sep="")      
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Summary   
+\end_layout
+
+\begin_layout Plain Layout
+
+  tb <- table(object$Process)   
+\end_layout
+
+\begin_layout Plain Layout
+
+  cat("The whole process is summary by following table", "
+\backslash
+n")   
+\end_layout
+
+\begin_layout Plain Layout
+
+  print(tb)   
+\end_layout
+
+\begin_layout Plain Layout
+
+  cat("
+\backslash
+n", "Detailed process:", paste(substr(object$Process, 1, 1), collapse=""),
+ "
+\backslash
+n") 
+\end_layout
+
+\begin_layout Plain Layout
+
+  cat(" ", "u(Up), d(Down), r(Right), l(Left)")
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+walk1
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In the plot method, the function will output the path out with Start pointed
+ red and End pointed blue.
+ Also, I add a legend in the plot.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<plot>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#plot 
+\end_layout
+
+\begin_layout Plain Layout
+
+plot.rw <- function(object){   
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Make plot   
+\end_layout
+
+\begin_layout Plain Layout
+
+  with(object, plot(Path, type="l", main="myWalk path",
+\end_layout
+
+\begin_layout Plain Layout
+
+                    xlab="x1", ylab="x2",
+\end_layout
+
+\begin_layout Plain Layout
+
+                    xlim=c(min(Path[, 1]), max(Path[, 1]) + 1)))      
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Add point   
+\end_layout
+
+\begin_layout Plain Layout
+
+  with(object, points(Start[1], Start[2], col="Red", pch=16))   
+\end_layout
+
+\begin_layout Plain Layout
+
+  with(object, points(End[1], End[2], col="Blue", pch=16))       
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Add legend   
+\end_layout
+
+\begin_layout Plain Layout
+
+  legend("topright", legend=c("Path", "Start", "End"),
+\end_layout
+
+\begin_layout Plain Layout
+
+         lty=c(1, NA, NA), pch=c(NA, 16, 16),
+\end_layout
+
+\begin_layout Plain Layout
+
+         col=c("black", "red", "blue")) 
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(walk1)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The '[' operator will give you the position of ith step with origin as 0
+ and 1st step as 1.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<position>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#[ 
+\end_layout
+
+\begin_layout Plain Layout
+
+`[.rw` <- function(object, i){   
+\end_layout
+
+\begin_layout Plain Layout
+
+  object$Path[i + 1, ] 
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+walk1[1]; walk1[3]
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The 
+\series bold
+start
+\series default
+ function will change all thing in the object in class rw by the origin
+ which the user specifies.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Start>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#Start 
+\end_layout
+
+\begin_layout Plain Layout
+
+start.rw <- function(object, x){   
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Change Start   
+\end_layout
+
+\begin_layout Plain Layout
+
+  object$Start <- x    
+\end_layout
+
+\begin_layout Plain Layout
+
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Change Path  
+\end_layout
+
+\begin_layout Plain Layout
+
+  object$Path <- object$Path + x
+\end_layout
+
+\begin_layout Plain Layout
+
+       
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Update N   
+\end_layout
+
+\begin_layout Plain Layout
+
+  object$End <- object$Path[dim(object$Path)[1], ]    
+\end_layout
+
+\begin_layout Plain Layout
+
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+  object 
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+start(walk1, c(0, 5))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
