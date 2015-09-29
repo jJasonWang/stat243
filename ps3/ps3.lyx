@@ -89,6 +89,61 @@ September 28, 2015
 \end_layout
 
 \begin_layout Standard
+1.
+ These comments and questions are from the article written by Milman and
+ Perez.
+\end_layout
+
+\begin_layout Standard
+Comments 
+\end_layout
+
+\begin_layout Standard
+The article breaks down the computational research cycle into difference
+ steps which make me understand the problem it mentioned.
+ For example, I learned Git last year; however, without participating in
+ an open project, I haven’t use the most powerful part of it.
+ In the chapter3, the authors illustrate several ideas such as version control
+ and testing to tell us how important those tools or practice and how they
+ will influence the workflow of computational research.
+ Not only can they make the big project run successfully, but also benefit
+ some daily routines.
+ The authors take the open source project, IPython, as an example to show
+ how we can utilize tools and procedure to improve the computation scientific
+ work.
+ It makes their points more clear and convincing to reader.
+\end_layout
+
+\begin_layout Standard
+Questions 
+\end_layout
+
+\begin_layout Standard
+(1).
+ Will it be better if we have a united and compulsory for computational
+ work to obey? 
+\end_layout
+
+\begin_layout Standard
+(2).
+ Is there any suggested learning path for students to acquire skills for
+ each tool? 
+\end_layout
+
+\begin_layout Standard
+(3).
+ What may be the drawback for using the tools or practices mentioned in
+ article?
+\begin_inset Formula 
+\[
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 \begin_inset ERT
 status open
 
@@ -3108,7 +3163,12 @@ status open
 
 \begin_layout Plain Layout
 
-start.rw <- function(object, x){   
+`start<-` <- function(x, ...) UseMethod("start<-")
+\end_layout
+
+\begin_layout Plain Layout
+
+`start<-.rw` <- function(object, value){   
 \end_layout
 
 \begin_layout Plain Layout
@@ -3118,7 +3178,7 @@ start.rw <- function(object, x){
 
 \begin_layout Plain Layout
 
-  object$Start <- x    
+  object$Start <- value    
 \end_layout
 
 \begin_layout Plain Layout
@@ -3133,7 +3193,7 @@ start.rw <- function(object, x){
 
 \begin_layout Plain Layout
 
-  object$Path <- object$Path + x
+  object$Path <- object$Path + value
 \end_layout
 
 \begin_layout Plain Layout
@@ -3172,7 +3232,12 @@ start.rw <- function(object, x){
 
 \begin_layout Plain Layout
 
-start(walk1, c(0, 5))
+start(walk1) <- c(5, 7)
+\end_layout
+
+\begin_layout Plain Layout
+
+walk1
 \end_layout
 
 \begin_layout Plain Layout

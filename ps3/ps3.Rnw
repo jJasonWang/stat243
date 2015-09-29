@@ -665,12 +665,13 @@ class rw by the origin which the user specifies.
 
 <<Start>>=
 #Start 
-start.rw <- function(object, x){   
+`start<-` <- function(x, ...) UseMethod("start<-")
+`start<-.rw` <- function(object, value){   
   #Change Start   
-  object$Start <- x    
+  object$Start <- value    
  
   #Change Path  
-  object$Path <- object$Path + x
+  object$Path <- object$Path + value
        
   #Update N   
   object$End <- object$Path[dim(object$Path)[1], ]    
@@ -678,7 +679,8 @@ start.rw <- function(object, x){
   object 
 }
 
-start(walk1, c(0, 5))
+start(walk1) <- c(5, 7)
+walk1
 @
 
 \end{document}
