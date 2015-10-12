@@ -1,0 +1,551 @@
+%% LyX 2.1.4 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass{article}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{geometry}
+\geometry{verbose,tmargin=2.54cm,bmargin=2.54cm,lmargin=3cm,rmargin=3cm}
+\usepackage{amstext}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+\newcommand{\lyxmathsym}[1]{\ifmmode\begingroup\def\b@ld{bold}
+  \text{\ifx\math@version\b@ld\bfseries\fi#1}\endgroup\else#1\fi}
+
+
+\makeatother
+
+\begin{document}
+
+
+\title{STAT243 Problem Set4}
+
+
+\author{Name: Chih Hui Wang SID: 26955255}
+
+
+\date{October 4, 2015}
+
+\maketitle
+1. (a) The problem is shown below.
+
+<<origin>>=
+#Origin Code
+set.seed(0) 
+runif(1) 
+
+save(.Random.seed, file = 'tmp.Rda') 
+runif(1)
+@
+
+<<load>>=
+#The same as previous
+load('tmp.Rda') 
+runif(1)
+@
+
+<<problem>>=
+#Should be the same as previous
+tmp <- function() {   
+  load('tmp.Rda')   
+  runif(1)    
+} 
+tmp()
+@
+
+It is the problem of scoping, the problem can only happen in two function,
+\textbf{load} and \textbf{runif}. First, we have to make sure where
+the function \textbf{runif} takes seed. It can only take the random
+seed from two environment, global and function. Let us take a look
+the random seed in R when we load the \textbf{tmp.Rda.}
+
+<<test>>=
+load('tmp.Rda')
+#Random seed after load tmp.Rda
+head(.Random.seed)
+runif(1)
+head(.Random.seed)
+@
+
+Then, let us put the \textbf{.Random.seed} inside the function to
+see what is going on when the function load the \textbf{tmp.Rda} and
+run the function \textbf{runif}.
+
+<<runif>>=
+#Test
+tmp_test <- function() {    
+  print(head(.Random.seed)) 
+  load('tmp.Rda')
+  print(head(.Random.seed))  
+  runif(1)
+  print(head(.Random.seed))   
+} 
+tmp_test()
+@
+
+By observing the previous outcomes, we can found that after the function
+run \textbf{load}, the seeds change indeed. However, after the \textbf{runif}
+finish, the random seed do not change at all. While it probably load
+the seed into the function environment, we still are not sure where
+exactly the place is the \textbf{load} put seed into. Now let us add
+more commands to print out the seed of the global enviroment(by parent.frame()
+in the function, the parent environment of the function is global
+environment), which can prove our assumption.
+
+<<test2>>=
+tmp_test2 <- function(){
+  #Before loading
+  cat("function: ", head(.Random.seed), "\n")  
+  cat("global: ", head(parent.frame()$.Random.seed), "\n")
+
+  load('tmp.Rda')
+  #After loading
+  cat("function: ", head(.Random.seed), "\n")  
+  cat("global: ", head(parent.frame()$.Random.seed), "\n")
+
+  runif(1)
+  #After generating random number
+  cat("function: ", head(.Random.seed), "\n")  
+  cat("global: ", head(parent.frame()$.Random.seed), "\n") 
+}
+
+tmp_test2()
+@
+
+The outcome indicate that the \textbf{runif} inside the \textbf{tmp}
+function takes the seed from global environment, not the tmp function
+environment. However, the \textbf{load} function actually put the
+seed into the function envrionment.
+
+Now, the problem turn out to be that the function \textbf{load} do
+not load the seed to the correct environment, so let's see its argument
+to check whether there is any parameter we can adjust.
+
+<<show>>=
+args(load)
+@
+
+As you can see, there is a argument called \textbf{parent.frame()},
+which is the parent environment. In this case, the parent environment
+of the \textbf{load} function is \textbf{tmp} function environment.
+
+(b) Therefore, the problem is that the \textbf{load} function put
+the seed into the place we do not want it to set. To solve the problem,
+we can change the enviroment to global environment for loading the
+seed by following code. Then, the problem is solved.
+
+<<correct>>=
+#Correct
+tmp_right <- function() {   
+  load('tmp.Rda', envir=parent.env(environment()))   
+  runif(1)    
+} 
+
+#Demo1
+tmp_right()
+@
+
+<<Demo>>=
+#Demo2
+tmp_right()
+@
+
+2. (a) If we do not calculate on the log scale, when n is a large
+number, let's say 2000, the term $n^{n}$ will become \Sexpr{2000^2000},
+which make other calculation fail. Therefore, we should calculate
+on the log scale and after finishing computation, we take exponential
+to outcome to transform back to the original scale.
+
+In my code, I seperate the equation into 4 part, calculate them respectively
+and then take exponential as well as sum the result. When using log
+scale, we encounter antoher problem. The range of the $k$ is from
+$0$ to $n$. The term $klogk$ may have some problem because the
+value inside log may be 0 which again will give us \Sexpr{Inf}. However,
+the main problem is the term $(n-k)log(n-k)$. When $n=k$, it will
+become $0\times\infty$, which R will output \textbf{NaN}. Hence,
+after I evaulate b, I add a command to set those NaN to 0.
+
+<<function1>>=
+#Divided into 4 terms 
+f <- function(n, p=0.3, phi=0.5){   
+  compute <- function(n=n, k){     
+    a <- lchoose(n, k)     
+    b <- k*log(k) + (n - k)*log(n - k) - n*log(n)     
+    b[is.na(b)] <- 0     
+    c <- phi*(-b)     
+    d <- k*phi*log(p) + (n - k)*phi*log(1 - p)     
+    result <- exp(a + b + c + d)   
+  }   
+  k <- 0:n   
+  sum(sapply(k, compute, n=n))  
+}
+
+
+
+
+#Demo
+f(10)
+@
+
+(b) Set the $k$ equal $0$ to $n$, then we can compute the sum in
+a vectorized way.
+
+<<vectorized>>=
+f_v <- function(n, p=0.3, phi=0.5){   
+  k <- 0:n   
+  a <- lchoose(n, k)   
+  b <- k*log(k) + (n - k)*log(n - k) - n*log(n)
+  #Deal with the NaN
+  b[is.na(b)] <- 0   
+  c <- phi*(-b)   
+  d <- k*phi*log(p) + (n - k)*phi*log(1 - p
+)   
+  sum(exp(a + b + c + d))    
+}
+
+#Demo, same as previous
+f_v(10)
+@
+
+Both of ways perform well in two cases.
+
+<<benchmark>>=
+library(rbenchmark)
+#n=10
+benchmark(
+  f(10),
+  f_v(10),
+  replications=10
+)
+#n=2000
+benchmark(
+  f(2000),
+  f_v(2000),
+  replications=10
+)
+@
+
+(c) As shown below, large proportion of time spends on computing the
+\textbf{lchoose}, so first we improve the performance of \textbf{lchoose}.
+
+<<Rprof>>=
+Rprof("f_v.prof") 
+invisible(sapply(1:2000, f_v))
+Rprof(NULL) 
+summaryRprof("f_v.prof")$by.self
+@
+
+I tried to replace the \textbf{lchoose} by \textbf{lfactorial} and
+find out that it will speed up the calculation.
+
+<<correction>>=
+f_v_c1 <- function(n, p=0.3, phi=0.5){   
+  k <- 0:n   
+  a <- lfactorial(n) - (lfactorial(k) + lfactorial(n - k))   
+  b <- k*log(k) + (n - k)*log(n - k) - n*log(n)
+  #Deal with the NaN
+  b[is.na(b)] <- 0   
+  c <- phi*(-b)   
+  d <- k*phi*log(p) + (n - k)*phi*log(1 - p
+)   
+  sum(exp(a + b + c + d))    
+}
+@
+
+<<Rprof2>>=
+Rprof("f_v_c1.prof") 
+invisible(f_v_c1(2000000))
+Rprof(NULL) 
+summaryRprof("f_v_c1.prof")$by.self
+@
+
+The most time-consuming part is still \textbf{lfactorial}, so I go
+inside the function line by line. I found out that the a, b and c
+are actullay all symmetric. Therefore, if we can calculate half of
+them and use index to produce the other half, then we probably can
+speed up the speed by around $50\%$ (but we add more commands to
+distinguish the case for odd and even number so it may not be as well
+as we expected). 
+
+<<correction2>>=
+f_v_c2 <- function(n, p=0.3, phi=0.5){   
+  k <- 0:floor((n + 1)/2)   
+  if(n %% 2){     
+    j <- c(1:(n %/% 2 + 1), (n %/% 2 + 1):1)   
+  }else{     
+    j <- c(1:(n %/% 2 + 1), (n %/% 2):1)   
+  }      
+  a <- lfactorial(n) - (lfactorial(k) + lfactorial(n - k))   
+  b <- k*log(k) + (n - k)*log(n - k) - n*log(n)   
+  b[is.na(b)] <- 0   
+  c <- phi*(-b)   
+  d <-  (0:n)*phi*log(p) + (n - (0:n))*phi*log(1 - p)  
+  sum(exp(a[j] + b[j] + c[j] + d))    
+}
+@
+
+It turns out that the speed indeed accelerates.
+
+<<Rprof3>>=
+Rprof("f_v_c2.prof") 
+invisible(f_v_c2(2000000))
+Rprof(NULL) 
+summaryRprof("f_v_c2.prof")$by.self
+@
+
+3. (a) I use sapply to evaulate all the weighted mean by index across
+all the observations for A. It can also compute the observations for
+B in the same way.
+
+<<oneline>>=
+#Load the data
+load("mixedMember.Rda")
+
+#One line code to compute the weighted mean
+head(sapply(1:length(wgtsA), function(x) sum(wgtsA[[x]]*muA[IDsA[[x]]]))) 
+@
+
+(b) My first strategy is unlist all the weight and ID to a vector.
+Using ID as a index vector for getting the correct mu, and then I
+multiple two vectors together to get the all weighted value. Then,
+I use the \textbf{cumsum} function, I can get the sum of all values,
+which is quite close to the answer while need to more process a little
+bit more. To get the correct answer, I create a variable \textbf{location}
+which is the position of each sum located. By subsetting by location
+and use \textbf{diff}, we can get the weighted mean for each case.
+
+<<Strategy1>>=
+#Strategy 1 
+wA <- unlist(wgtsA) 
+idA <- unlist(IDsA)
+
+#length
+lA <- sapply(wgtsA, length)
+#Get the location of each sum
+locationA <- cumsum(lA) 
+
+head(diff(c(0, cumsum(wA*muA[idA])[locationA])))
+
+@
+
+<<caseB>>=
+#Case B 
+wB <- unlist(wgtsB) 
+idB <- unlist(IDsB)
+
+#length
+lB <- sapply(wgtsB, length) 
+#Get the location of each sum
+locationB <- cumsum(lB) 
+
+head(diff(c(0, cumsum(wB*muB[idB])[locationB])))
+@
+
+(c) Second strategy is that we create a matrix with dimension $100,000\times lengthmu$.
+The $lengthmu$ is the number of mean in each case.(i.e. case A is
+1000, case B is 10) For each column, we directly put the weights into
+it and then use matrix product with vector muA or muB to get the results(Dimension:
+100,000x10 $\times$ 10x1). This approach will be more appropriate
+for B because the mean vector for B is much smaller than A. 
+
+<<Strategy2>>=
+#Strategy 2 
+#Function to construct weight matrix 
+strategy2_weight <- function(weight, ID, mu){   
+  m <- length(weight)   
+  n <- length(mu)      
+  #Weight   
+  weight_matrix <- matrix(0, nrow=m, ncol=n)   
+  for(i in 1:10000){     
+    weight_matrix[i, ][ID[[i]]] <- weight[[i]]   
+  }   
+  weight_matrix 
+}
+
+#Case A 
+S_2_Aw <- strategy2_weight(wgtsA, IDsA, muA)
+
+head(S_2_Aw %*% muA)
+@
+
+<<caseB2>>=
+#Case B 
+S_2_Bw <- strategy2_weight(wgtsB, IDsB, muB)
+
+head(S_2_Bw %*% muB)
+@
+
+(d) The following is the comparison for two case with three approaches.
+As the result shown, the first strategy performa better on case A,
+and the second strategy works faster for case B. Both strategies are
+faster than sapply method. 
+
+<<comparison1>>=
+#CaseA 
+benchmark(   
+  sapply=sapply(1:length(wgtsA), function(x) sum(wgtsA[[x]]*muA[IDsA[[x]]])),
+  strategy1=diff(c(0, cumsum(wA*muA[idA])[locationA])),   
+  strategy2=S_2_Aw %*% muA,   
+  replications=10 
+)
+@
+
+<<comparison2>>=
+#CaseB 
+benchmark(   
+  sapply=sapply(1:length(wgtsB), function(x) sum(wgtsB[[x]]*muB[IDsB[[x]]])),
+  strategy1=diff(c(0, cumsum(wB*muB[idB])[locationB])),   
+  strategy2=S_2_Bw %*% muB,      
+  replications=10 
+)
+@
+
+<<rm>>=
+rm(list=ls())
+@
+
+4. (a) I remove all the variables and functions before addressing
+the problem. There is total 57.8MB in R which includes 4 vector, y,
+x1, x2, x3(each are 8MB) and some other things.
+
+<<memory>>=
+library(pryr) 
+
+n <- 1000000 
+y <- rnorm(n); x1 <- rnorm(n); x2 <- rnorm(n); x3 <- rnorm(n) 
+mem_used()
+@
+
+Then, I source the lm functionm \textbf{mylm} I wirte (In Github).
+I add the command \textbf{mem\_used} before the function call \textbf{lm.fit}.
+
+<<mylmfun>>=
+source("mylm1.r")
+@
+
+The difference between this and the initial memory is around 156MB.
+
+<<lmfit>>=
+fit <- mylm(y ~ x1 + x2 + x3)
+
+fit
+@
+
+(b) To figure out which objects occupy lots fo memory, I add the \textbf{mem\_used}
+function into each line and find out that memory increases when the
+\textbf{lm} function run the following command.
+
+\textbf{mf <- eval(mf, parent.frame()):} The object is a data.frame
+which contains 4 fields, y, x1, x2, x3
+
+\textbf{y <- model.response(mf, \textquotedbl{}numeric\textquotedbl{}):
+}This is a vector which contains y.
+
+\textbf{x <- model.matrix(mt, mf, contrasts):} This is a matrix which
+contains intercept, x1 x2 x3
+
+For \textbf{mylm2} function, I add \textbf{mem\_used} before and after
+the lines of above command. It will output the before and after memory
+and the difference will be the memory using by creating the object. 
+
+<<mylmfun2>>=
+source("mylm2.r")
+@
+
+The first and second difference 32MB is probably the memory of \textbf{mf}.
+It is reasonable because we have 4 vector and each of them are double
+with length 1000000. Hence the memory of \textbf{mf} is around 32MB. 
+
+The third and fourth difference is probably the memory of \textbf{y},
+which is around 16MB. It may have some problem with it because it
+should only consume 8MB to stroe the vector \textbf{y}. After I output
+it to the global environment, I find out that it is actually a vector
+with names and actually its memory is 64MB(In \textbf{mylm3}), so
+the rest of the memory may be the memory of character (name). 
+
+The fifth and sixth difference is the memory of \textbf{x}. It should
+have the same memory as \textbf{mf} because they have same dimensions.
+However, it turns out that it increases 40MB after create the object.
+I added a command to output the value to global environment and found
+out that actually the matrix contain several items. It includes the
+values(intercept, x1, x2, x3), colnames(``intercept'', ``x1'',
+``x2'', ``x3''), and the rownames(``1'', ``2'', ...,''1000000'').
+That is why the element of the matrix are stored bigger than 8 bytes
+per elements.
+
+<<lmfit2>>=
+fit2 <- mylm2(y ~ x1 + x2 + x3)
+@
+
+<<try>>=
+source("mylm3.r")
+@
+
+I rewrite the function to output those objects into global environment.
+The following are the actual memories usage for those objects.
+
+<<lmfit3>>=
+fit3 <- mylm3(y ~ x1 + x2 + x3)
+
+#Memory of mf
+object_size((mfnew))
+
+#Memory of y(vector with name)
+object_size((ynew))
+
+#Memory of x(model.matrix)
+object_size((xnew))
+@
+
+When I see the above result, I am quite confused. The memory for \textbf{mf}
+is the same as expected. However, when the \textbf{lm} function creates
+the variable y, its memory should increase 64 MB instead of 16MB we
+saw previous. The same situation happens when it creat the model matrix,
+\textbf{x}. It should add another 88 MB to the memory while the memory
+only increases by 40MB. It may be that R automatically did some operations
+to reduce the memory usage. 
+
+(c) One way to reduce the memory usage is to change the x(the one
+created model.matrix), originally 40 MB. If we don't store the name,
+the size will reduce to 32MB as we calculated.
+
+<<improve>>=
+object_size(xnew)
+head(xnew)
+@
+
+<<improve2>>=
+row.names(xnew) <- NULL
+head(xnew)
+object_size(xnew)
+@
+
+Another way is to reduce the size of y. We can create a same vector
+without name by using the command y <- mf{[}, 1{]}. 
+
+<<improve3>>=
+y <- mfnew[, 1]
+head(y)
+head(ynew)
+@
+
+<<mylm4>>=
+source("mylm4.r")
+@
+
+mylm4 function is that I replace the line $x<-model.matrix(mt,mf,contrasts)$
+in \textbf{lm} function by $x<-cbind(1,x1,x2,x3)$ and $y<-model.response(mf,\lyxmathsym{\textquotedblleft}numeric\lyxmathsym{\textquotedblright})$
+by $y<-mf[,1]$. For \textbf{y}, the memory does not increase in this
+situation(R may do something else to reduce the memory). For \textbf{x},
+the memory indeed increases only 32 MB when it run through the code.
+The total memory spending 64MB before calling the \textbf{lm.fit}
+function. The difference is between the original 156MB an 64MB is
+92MB.
+
+<<lmfit4>>=
+fit4 <- mylm4(y ~ x1 + x2 + x3)
+fit4
+@
+
+\end{document}

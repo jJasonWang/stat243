@@ -1,0 +1,2563 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\begin_modules
+knitr
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 3cm
+\topmargin 2.54cm
+\rightmargin 3cm
+\bottommargin 2.54cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+STAT243 Problem Set4
+\end_layout
+
+\begin_layout Author
+Name: Chih Hui Wang SID: 26955255
+\end_layout
+
+\begin_layout Date
+October 4, 2015
+\end_layout
+
+\begin_layout Standard
+1.
+ (a) The problem is shown below.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<origin>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#Origin Code
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(0) 
+\end_layout
+
+\begin_layout Plain Layout
+
+runif(1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+save(.Random.seed, file = 'tmp.Rda') 
+\end_layout
+
+\begin_layout Plain Layout
+
+runif(1)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<load>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#The same as previous
+\end_layout
+
+\begin_layout Plain Layout
+
+load('tmp.Rda') 
+\end_layout
+
+\begin_layout Plain Layout
+
+runif(1)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<problem>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#Should be the same as previous
+\end_layout
+
+\begin_layout Plain Layout
+
+tmp <- function() {   
+\end_layout
+
+\begin_layout Plain Layout
+
+  load('tmp.Rda')   
+\end_layout
+
+\begin_layout Plain Layout
+
+  runif(1)    
+\end_layout
+
+\begin_layout Plain Layout
+
+} 
+\end_layout
+
+\begin_layout Plain Layout
+
+tmp()
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It is the problem of scoping, the problem can only happen in two function,
+ 
+\series bold
+load
+\series default
+ and 
+\series bold
+runif
+\series default
+.
+ First, we have to make sure where the function 
+\series bold
+runif
+\series default
+ takes seed.
+ It can only take the random seed from two environment, global and function.
+ Let us take a look the random seed in R when we load the 
+\series bold
+tmp.Rda.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<test>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+load('tmp.Rda')
+\end_layout
+
+\begin_layout Plain Layout
+
+#Random seed after load tmp.Rda
+\end_layout
+
+\begin_layout Plain Layout
+
+head(.Random.seed)
+\end_layout
+
+\begin_layout Plain Layout
+
+runif(1)
+\end_layout
+
+\begin_layout Plain Layout
+
+head(.Random.seed)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Then, let us put the 
+\series bold
+.Random.seed
+\series default
+ inside the function to see what is going on when the function load the
+ 
+\series bold
+tmp.Rda
+\series default
+ and run the function 
+\series bold
+runif
+\series default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<runif>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#Test
+\end_layout
+
+\begin_layout Plain Layout
+
+tmp_test <- function() {    
+\end_layout
+
+\begin_layout Plain Layout
+
+  print(head(.Random.seed)) 
+\end_layout
+
+\begin_layout Plain Layout
+
+  load('tmp.Rda')
+\end_layout
+
+\begin_layout Plain Layout
+
+  print(head(.Random.seed))  
+\end_layout
+
+\begin_layout Plain Layout
+
+  runif(1)
+\end_layout
+
+\begin_layout Plain Layout
+
+  print(head(.Random.seed))   
+\end_layout
+
+\begin_layout Plain Layout
+
+} 
+\end_layout
+
+\begin_layout Plain Layout
+
+tmp_test()
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+By observing the previous outcomes, we can found that after the function
+ run 
+\series bold
+load
+\series default
+, the seeds change indeed.
+ However, after the 
+\series bold
+runif
+\series default
+ finish, the random seed do not change at all.
+ While it probably load the seed into the function environment, we still
+ are not sure where exactly the place is the 
+\series bold
+load
+\series default
+ put seed into.
+ Now let us add more commands to print out the seed of the global enviroment(by
+ parent.frame() in the function, the parent environment of the function is
+ global environment), which can prove our assumption.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<test2>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+tmp_test2 <- function(){
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Before loading
+\end_layout
+
+\begin_layout Plain Layout
+
+  cat("function: ", head(.Random.seed), "
+\backslash
+n")  
+\end_layout
+
+\begin_layout Plain Layout
+
+  cat("global: ", head(parent.frame()$.Random.seed), "
+\backslash
+n")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  load('tmp.Rda')
+\end_layout
+
+\begin_layout Plain Layout
+
+  #After loading
+\end_layout
+
+\begin_layout Plain Layout
+
+  cat("function: ", head(.Random.seed), "
+\backslash
+n")  
+\end_layout
+
+\begin_layout Plain Layout
+
+  cat("global: ", head(parent.frame()$.Random.seed), "
+\backslash
+n")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  runif(1)
+\end_layout
+
+\begin_layout Plain Layout
+
+  #After generating random number
+\end_layout
+
+\begin_layout Plain Layout
+
+  cat("function: ", head(.Random.seed), "
+\backslash
+n")  
+\end_layout
+
+\begin_layout Plain Layout
+
+  cat("global: ", head(parent.frame()$.Random.seed), "
+\backslash
+n") 
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+tmp_test2()
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The outcome indicate that the 
+\series bold
+runif
+\series default
+ inside the 
+\series bold
+tmp
+\series default
+ function takes the seed from global environment, not the tmp function environme
+nt.
+ However, the 
+\series bold
+load
+\series default
+ function actually put the seed into the function envrionment.
+\end_layout
+
+\begin_layout Standard
+Now, the problem turn out to be that the function 
+\series bold
+load
+\series default
+ do not load the seed to the correct environment, so let's see its argument
+ to check whether there is any parameter we can adjust.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<show>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+args(load)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As you can see, there is a argument called 
+\series bold
+parent.frame()
+\series default
+, which is the parent environment.
+ In this case, the parent environment of the 
+\series bold
+load
+\series default
+ function is 
+\series bold
+tmp
+\series default
+ function environment.
+\end_layout
+
+\begin_layout Standard
+(b) Therefore, the problem is that the 
+\series bold
+load
+\series default
+ function put the seed into the place we do not want it to set.
+ To solve the problem, we can change the enviroment to global environment
+ for loading the seed by following code.
+ Then, the problem is solved.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<correct>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#Correct
+\end_layout
+
+\begin_layout Plain Layout
+
+tmp_right <- function() {   
+\end_layout
+
+\begin_layout Plain Layout
+
+  load('tmp.Rda', envir=parent.env(environment()))   
+\end_layout
+
+\begin_layout Plain Layout
+
+  runif(1)    
+\end_layout
+
+\begin_layout Plain Layout
+
+} 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Demo1
+\end_layout
+
+\begin_layout Plain Layout
+
+tmp_right()
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Demo>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#Demo2
+\end_layout
+
+\begin_layout Plain Layout
+
+tmp_right()
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+2.
+ (a) If we do not calculate on the log scale, when n is a large number,
+ let's say 2000, the term 
+\begin_inset Formula $n^{n}$
+\end_inset
+
+ will become 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Sexpr{2000^2000}
+\end_layout
+
+\end_inset
+
+, which make other calculation fail.
+ Therefore, we should calculate on the log scale and after finishing computation
+, we take exponential to outcome to transform back to the original scale.
+\end_layout
+
+\begin_layout Standard
+In my code, I seperate the equation into 4 part, calculate them respectively
+ and then take exponential as well as sum the result.
+ When using log scale, we encounter antoher problem.
+ The range of the 
+\begin_inset Formula $k$
+\end_inset
+
+ is from 
+\begin_inset Formula $0$
+\end_inset
+
+ to 
+\begin_inset Formula $n$
+\end_inset
+
+.
+ The term 
+\begin_inset Formula $klogk$
+\end_inset
+
+ may have some problem because the value inside log may be 0 which again
+ will give us 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Sexpr{Inf}
+\end_layout
+
+\end_inset
+
+.
+ However, the main problem is the term 
+\begin_inset Formula $(n-k)log(n-k)$
+\end_inset
+
+.
+ When 
+\begin_inset Formula $n=k$
+\end_inset
+
+, it will become 
+\begin_inset Formula $0\times\infty$
+\end_inset
+
+, which R will output 
+\series bold
+NaN
+\series default
+.
+ Hence, after I evaulate b, I add a command to set those NaN to 0.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<function1>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#Divided into 4 terms 
+\end_layout
+
+\begin_layout Plain Layout
+
+f <- function(n, p=0.3, phi=0.5){   
+\end_layout
+
+\begin_layout Plain Layout
+
+  compute <- function(n=n, k){     
+\end_layout
+
+\begin_layout Plain Layout
+
+    a <- lchoose(n, k)     
+\end_layout
+
+\begin_layout Plain Layout
+
+    b <- k*log(k) + (n - k)*log(n - k) - n*log(n)     
+\end_layout
+
+\begin_layout Plain Layout
+
+    b[is.na(b)] <- 0     
+\end_layout
+
+\begin_layout Plain Layout
+
+    c <- phi*(-b)     
+\end_layout
+
+\begin_layout Plain Layout
+
+    d <- k*phi*log(p) + (n - k)*phi*log(1 - p)     
+\end_layout
+
+\begin_layout Plain Layout
+
+    result <- exp(a + b + c + d)   
+\end_layout
+
+\begin_layout Plain Layout
+
+  }   
+\end_layout
+
+\begin_layout Plain Layout
+
+  k <- 0:n   
+\end_layout
+
+\begin_layout Plain Layout
+
+  sum(sapply(k, compute, n=n))  
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Demo
+\end_layout
+
+\begin_layout Plain Layout
+
+f(10)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+(b) Set the 
+\begin_inset Formula $k$
+\end_inset
+
+ equal 
+\begin_inset Formula $0$
+\end_inset
+
+ to 
+\begin_inset Formula $n$
+\end_inset
+
+, then we can compute the sum in a vectorized way.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<vectorized>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+f_v <- function(n, p=0.3, phi=0.5){   
+\end_layout
+
+\begin_layout Plain Layout
+
+  k <- 0:n   
+\end_layout
+
+\begin_layout Plain Layout
+
+  a <- lchoose(n, k)   
+\end_layout
+
+\begin_layout Plain Layout
+
+  b <- k*log(k) + (n - k)*log(n - k) - n*log(n)
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Deal with the NaN
+\end_layout
+
+\begin_layout Plain Layout
+
+  b[is.na(b)] <- 0   
+\end_layout
+
+\begin_layout Plain Layout
+
+  c <- phi*(-b)   
+\end_layout
+
+\begin_layout Plain Layout
+
+  d <- k*phi*log(p) + (n - k)*phi*log(1 - p
+\end_layout
+
+\begin_layout Plain Layout
+
+)   
+\end_layout
+
+\begin_layout Plain Layout
+
+  sum(exp(a + b + c + d))    
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Demo, same as previous
+\end_layout
+
+\begin_layout Plain Layout
+
+f_v(10)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Both of ways perform well in two cases.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<benchmark>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(rbenchmark)
+\end_layout
+
+\begin_layout Plain Layout
+
+#n=10
+\end_layout
+
+\begin_layout Plain Layout
+
+benchmark(
+\end_layout
+
+\begin_layout Plain Layout
+
+  f(10),
+\end_layout
+
+\begin_layout Plain Layout
+
+  f_v(10),
+\end_layout
+
+\begin_layout Plain Layout
+
+  replications=10
+\end_layout
+
+\begin_layout Plain Layout
+
+)
+\end_layout
+
+\begin_layout Plain Layout
+
+#n=2000
+\end_layout
+
+\begin_layout Plain Layout
+
+benchmark(
+\end_layout
+
+\begin_layout Plain Layout
+
+  f(2000),
+\end_layout
+
+\begin_layout Plain Layout
+
+  f_v(2000),
+\end_layout
+
+\begin_layout Plain Layout
+
+  replications=10
+\end_layout
+
+\begin_layout Plain Layout
+
+)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+(c) As shown below, large proportion of time spends on computing the 
+\series bold
+lchoose
+\series default
+, so first we improve the performance of 
+\series bold
+lchoose
+\series default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Rprof>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+Rprof("f_v.prof") 
+\end_layout
+
+\begin_layout Plain Layout
+
+invisible(sapply(1:2000, f_v))
+\end_layout
+
+\begin_layout Plain Layout
+
+Rprof(NULL) 
+\end_layout
+
+\begin_layout Plain Layout
+
+summaryRprof("f_v.prof")$by.self
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I tried to replace the 
+\series bold
+lchoose
+\series default
+ by 
+\series bold
+lfactorial
+\series default
+ and find out that it will speed up the calculation.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<correction>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+f_v_c1 <- function(n, p=0.3, phi=0.5){   
+\end_layout
+
+\begin_layout Plain Layout
+
+  k <- 0:n   
+\end_layout
+
+\begin_layout Plain Layout
+
+  a <- lfactorial(n) - (lfactorial(k) + lfactorial(n - k))   
+\end_layout
+
+\begin_layout Plain Layout
+
+  b <- k*log(k) + (n - k)*log(n - k) - n*log(n)
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Deal with the NaN
+\end_layout
+
+\begin_layout Plain Layout
+
+  b[is.na(b)] <- 0   
+\end_layout
+
+\begin_layout Plain Layout
+
+  c <- phi*(-b)   
+\end_layout
+
+\begin_layout Plain Layout
+
+  d <- k*phi*log(p) + (n - k)*phi*log(1 - p
+\end_layout
+
+\begin_layout Plain Layout
+
+)   
+\end_layout
+
+\begin_layout Plain Layout
+
+  sum(exp(a + b + c + d))    
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Rprof2>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+Rprof("f_v_c1.prof") 
+\end_layout
+
+\begin_layout Plain Layout
+
+invisible(f_v_c1(2000000))
+\end_layout
+
+\begin_layout Plain Layout
+
+Rprof(NULL) 
+\end_layout
+
+\begin_layout Plain Layout
+
+summaryRprof("f_v_c1.prof")$by.self
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The most time-consuming part is still 
+\series bold
+lfactorial
+\series default
+, so I go inside the function line by line.
+ I found out that the a, b and c are actullay all symmetric.
+ Therefore, if we can calculate half of them and use index to produce the
+ other half, then we probably can speed up the speed by around 
+\begin_inset Formula $50\%$
+\end_inset
+
+ (but we add more commands to distinguish the case for odd and even number
+ so it may not be as well as we expected).
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<correction2>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+f_v_c2 <- function(n, p=0.3, phi=0.5){   
+\end_layout
+
+\begin_layout Plain Layout
+
+  k <- 0:floor((n + 1)/2)   
+\end_layout
+
+\begin_layout Plain Layout
+
+  if(n %% 2){     
+\end_layout
+
+\begin_layout Plain Layout
+
+    j <- c(1:(n %/% 2 + 1), (n %/% 2 + 1):1)   
+\end_layout
+
+\begin_layout Plain Layout
+
+  }else{     
+\end_layout
+
+\begin_layout Plain Layout
+
+    j <- c(1:(n %/% 2 + 1), (n %/% 2):1)   
+\end_layout
+
+\begin_layout Plain Layout
+
+  }      
+\end_layout
+
+\begin_layout Plain Layout
+
+  a <- lfactorial(n) - (lfactorial(k) + lfactorial(n - k))   
+\end_layout
+
+\begin_layout Plain Layout
+
+  b <- k*log(k) + (n - k)*log(n - k) - n*log(n)   
+\end_layout
+
+\begin_layout Plain Layout
+
+  b[is.na(b)] <- 0   
+\end_layout
+
+\begin_layout Plain Layout
+
+  c <- phi*(-b)   
+\end_layout
+
+\begin_layout Plain Layout
+
+  d <-  (0:n)*phi*log(p) + (n - (0:n))*phi*log(1 - p)  
+\end_layout
+
+\begin_layout Plain Layout
+
+  sum(exp(a[j] + b[j] + c[j] + d))    
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It turns out that the speed indeed accelerates.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Rprof3>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+Rprof("f_v_c2.prof") 
+\end_layout
+
+\begin_layout Plain Layout
+
+invisible(f_v_c2(2000000))
+\end_layout
+
+\begin_layout Plain Layout
+
+Rprof(NULL) 
+\end_layout
+
+\begin_layout Plain Layout
+
+summaryRprof("f_v_c2.prof")$by.self
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+3.
+ (a) I use sapply to evaulate all the weighted mean by index across all
+ the observations for A.
+ It can also compute the observations for B in the same way.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<oneline>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#Load the data
+\end_layout
+
+\begin_layout Plain Layout
+
+load("mixedMember.Rda")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#One line code to compute the weighted mean
+\end_layout
+
+\begin_layout Plain Layout
+
+head(sapply(1:length(wgtsA), function(x) sum(wgtsA[[x]]*muA[IDsA[[x]]])))
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+(b) My first strategy is unlist all the weight and ID to a vector.
+ Using ID as a index vector for getting the correct mu, and then I multiple
+ two vectors together to get the all weighted value.
+ Then, I use the 
+\series bold
+cumsum
+\series default
+ function, I can get the sum of all values, which is quite close to the
+ answer while need to more process a little bit more.
+ To get the correct answer, I create a variable 
+\series bold
+location
+\series default
+ which is the position of each sum located.
+ By subsetting by location and use 
+\series bold
+diff
+\series default
+, we can get the weighted mean for each case.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Strategy1>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#Strategy 1 
+\end_layout
+
+\begin_layout Plain Layout
+
+wA <- unlist(wgtsA) 
+\end_layout
+
+\begin_layout Plain Layout
+
+idA <- unlist(IDsA)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#length
+\end_layout
+
+\begin_layout Plain Layout
+
+lA <- sapply(wgtsA, length)
+\end_layout
+
+\begin_layout Plain Layout
+
+#Get the location of each sum
+\end_layout
+
+\begin_layout Plain Layout
+
+locationA <- cumsum(lA) 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+head(diff(c(0, cumsum(wA*muA[idA])[locationA])))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<caseB>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#Case B 
+\end_layout
+
+\begin_layout Plain Layout
+
+wB <- unlist(wgtsB) 
+\end_layout
+
+\begin_layout Plain Layout
+
+idB <- unlist(IDsB)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#length
+\end_layout
+
+\begin_layout Plain Layout
+
+lB <- sapply(wgtsB, length) 
+\end_layout
+
+\begin_layout Plain Layout
+
+#Get the location of each sum
+\end_layout
+
+\begin_layout Plain Layout
+
+locationB <- cumsum(lB) 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+head(diff(c(0, cumsum(wB*muB[idB])[locationB])))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+(c) Second strategy is that we create a matrix with dimension 
+\begin_inset Formula $100,000\times lengthmu$
+\end_inset
+
+.
+ The 
+\begin_inset Formula $lengthmu$
+\end_inset
+
+ is the number of mean in each case.(i.e.
+ case A is 1000, case B is 10) For each column, we directly put the weights
+ into it and then use matrix product with vector muA or muB to get the results(D
+imension: 100,000x10 
+\begin_inset Formula $\times$
+\end_inset
+
+ 10x1).
+ This approach will be more appropriate for B because the mean vector for
+ B is much smaller than A.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Strategy2>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#Strategy 2 
+\end_layout
+
+\begin_layout Plain Layout
+
+#Function to construct weight matrix 
+\end_layout
+
+\begin_layout Plain Layout
+
+strategy2_weight <- function(weight, ID, mu){   
+\end_layout
+
+\begin_layout Plain Layout
+
+  m <- length(weight)   
+\end_layout
+
+\begin_layout Plain Layout
+
+  n <- length(mu)      
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Weight   
+\end_layout
+
+\begin_layout Plain Layout
+
+  weight_matrix <- matrix(0, nrow=m, ncol=n)   
+\end_layout
+
+\begin_layout Plain Layout
+
+  for(i in 1:10000){     
+\end_layout
+
+\begin_layout Plain Layout
+
+    weight_matrix[i, ][ID[[i]]] <- weight[[i]]   
+\end_layout
+
+\begin_layout Plain Layout
+
+  }   
+\end_layout
+
+\begin_layout Plain Layout
+
+  weight_matrix 
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Case A 
+\end_layout
+
+\begin_layout Plain Layout
+
+S_2_Aw <- strategy2_weight(wgtsA, IDsA, muA)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+head(S_2_Aw %*% muA)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<caseB2>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#Case B 
+\end_layout
+
+\begin_layout Plain Layout
+
+S_2_Bw <- strategy2_weight(wgtsB, IDsB, muB)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+head(S_2_Bw %*% muB)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+(d) The following is the comparison for two case with three approaches.
+ As the result shown, the first strategy performa better on case A, and
+ the second strategy works faster for case B.
+ Both strategies are faster than sapply method.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<comparison1>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#CaseA 
+\end_layout
+
+\begin_layout Plain Layout
+
+benchmark(   
+\end_layout
+
+\begin_layout Plain Layout
+
+  sapply=sapply(1:length(wgtsA), function(x) sum(wgtsA[[x]]*muA[IDsA[[x]]])),
+\end_layout
+
+\begin_layout Plain Layout
+
+  strategy1=diff(c(0, cumsum(wA*muA[idA])[locationA])),   
+\end_layout
+
+\begin_layout Plain Layout
+
+  strategy2=S_2_Aw %*% muA,   
+\end_layout
+
+\begin_layout Plain Layout
+
+  replications=10 
+\end_layout
+
+\begin_layout Plain Layout
+
+)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<comparison2>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#CaseB 
+\end_layout
+
+\begin_layout Plain Layout
+
+benchmark(   
+\end_layout
+
+\begin_layout Plain Layout
+
+  sapply=sapply(1:length(wgtsB), function(x) sum(wgtsB[[x]]*muB[IDsB[[x]]])),
+\end_layout
+
+\begin_layout Plain Layout
+
+  strategy1=diff(c(0, cumsum(wB*muB[idB])[locationB])),   
+\end_layout
+
+\begin_layout Plain Layout
+
+  strategy2=S_2_Bw %*% muB,      
+\end_layout
+
+\begin_layout Plain Layout
+
+  replications=10 
+\end_layout
+
+\begin_layout Plain Layout
+
+)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<rm>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+rm(list=ls())
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+4.
+ (a) I remove all the variables and functions before addressing the problem.
+ There is total 57.8MB in R which includes 4 vector, y, x1, x2, x3(each are
+ 8MB) and some other things.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<memory>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(pryr) 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+n <- 1000000 
+\end_layout
+
+\begin_layout Plain Layout
+
+y <- rnorm(n); x1 <- rnorm(n); x2 <- rnorm(n); x3 <- rnorm(n) 
+\end_layout
+
+\begin_layout Plain Layout
+
+mem_used()
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Then, I source the lm functionm 
+\series bold
+mylm
+\series default
+ I wirte (In Github).
+ I add the command 
+\series bold
+mem_used
+\series default
+ before the function call 
+\series bold
+lm.fit
+\series default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mylmfun>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+source("mylm1.r")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The difference between this and the initial memory is around 156MB.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<lmfit>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+fit <- mylm(y ~ x1 + x2 + x3)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+fit
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+(b) To figure out which objects occupy lots fo memory, I add the 
+\series bold
+mem_used
+\series default
+ function into each line and find out that memory increases when the 
+\series bold
+lm
+\series default
+ function run the following command.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+mf <- eval(mf, parent.frame()):
+\series default
+ The object is a data.frame which contains 4 fields, y, x1, x2, x3
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+y <- model.response(mf, "numeric"): 
+\series default
+This is a vector which contains y.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+x <- model.matrix(mt, mf, contrasts):
+\series default
+ This is a matrix which contains intercept, x1 x2 x3
+\end_layout
+
+\begin_layout Standard
+For 
+\series bold
+mylm2
+\series default
+ function, I add 
+\series bold
+mem_used
+\series default
+ before and after the lines of above command.
+ It will output the before and after memory and the difference will be the
+ memory using by creating the object.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mylmfun2>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+source("mylm2.r")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The first and second difference 32MB is probably the memory of 
+\series bold
+mf
+\series default
+.
+ It is reasonable because we have 4 vector and each of them are double with
+ length 1000000.
+ Hence the memory of 
+\series bold
+mf
+\series default
+ is around 32MB.
+ 
+\end_layout
+
+\begin_layout Standard
+The third and fourth difference is probably the memory of 
+\series bold
+y
+\series default
+, which is around 16MB.
+ It may have some problem with it because it should only consume 8MB to
+ stroe the vector 
+\series bold
+y
+\series default
+.
+ After I output it to the global environment, I find out that it is actually
+ a vector with names and actually its memory is 64MB(In 
+\series bold
+mylm3
+\series default
+), so the rest of the memory may be the memory of character (name).
+ 
+\end_layout
+
+\begin_layout Standard
+The fifth and sixth difference is the memory of 
+\series bold
+x
+\series default
+.
+ It should have the same memory as 
+\series bold
+mf
+\series default
+ because they have same dimensions.
+ However, it turns out that it increases 40MB after create the object.
+ I added a command to output the value to global environment and found out
+ that actually the matrix contain several items.
+ It includes the values(intercept, x1, x2, x3), colnames(
+\begin_inset Quotes eld
+\end_inset
+
+intercept
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+x1
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+x2
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+x3
+\begin_inset Quotes erd
+\end_inset
+
+), and the rownames(
+\begin_inset Quotes eld
+\end_inset
+
+1
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+2
+\begin_inset Quotes erd
+\end_inset
+
+, ...,
+\begin_inset Quotes erd
+\end_inset
+
+1000000
+\begin_inset Quotes erd
+\end_inset
+
+).
+ That is why the element of the matrix are stored bigger than 8 bytes per
+ elements.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<lmfit2>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+fit2 <- mylm2(y ~ x1 + x2 + x3)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<try>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+source("mylm3.r")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I rewrite the function to output those objects into global environment.
+ The following are the actual memories usage for those objects.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<lmfit3>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+fit3 <- mylm3(y ~ x1 + x2 + x3)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Memory of mf
+\end_layout
+
+\begin_layout Plain Layout
+
+object_size((mfnew))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Memory of y(vector with name)
+\end_layout
+
+\begin_layout Plain Layout
+
+object_size((ynew))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Memory of x(model.matrix)
+\end_layout
+
+\begin_layout Plain Layout
+
+object_size((xnew))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+When I see the above result, I am quite confused.
+ The memory for 
+\series bold
+mf
+\series default
+ is the same as expected.
+ However, when the 
+\series bold
+lm
+\series default
+ function creates the variable y, its memory should increase 64 MB instead
+ of 16MB we saw previous.
+ The same situation happens when it creat the model matrix, 
+\series bold
+x
+\series default
+.
+ It should add another 88 MB to the memory while the memory only increases
+ by 40MB.
+ It may be that R automatically did some operations to reduce the memory
+ usage.
+ 
+\end_layout
+
+\begin_layout Standard
+(c) One way to reduce the memory usage is to change the x(the one created
+ model.matrix), originally 40 MB.
+ If we don't store the name, the size will reduce to 32MB as we calculated.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<improve>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+object_size(xnew)
+\end_layout
+
+\begin_layout Plain Layout
+
+head(xnew)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<improve2>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+row.names(xnew) <- NULL
+\end_layout
+
+\begin_layout Plain Layout
+
+head(xnew)
+\end_layout
+
+\begin_layout Plain Layout
+
+object_size(xnew)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Another way is to reduce the size of y.
+ We can create a same vector without name by using the command y <- mf[,
+ 1].
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<improve3>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+y <- mfnew[, 1]
+\end_layout
+
+\begin_layout Plain Layout
+
+head(y)
+\end_layout
+
+\begin_layout Plain Layout
+
+head(ynew)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mylm4>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+source("mylm4.r")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+mylm4 function is that I replace the line 
+\begin_inset Formula $x<-model.matrix(mt,mf,contrasts)$
+\end_inset
+
+ in 
+\series bold
+lm
+\series default
+ function by 
+\begin_inset Formula $x<-cbind(1,x1,x2,x3)$
+\end_inset
+
+ and 
+\begin_inset Formula $y<-model.response(mf,“numeric”)$
+\end_inset
+
+ by 
+\begin_inset Formula $y<-mf[,1]$
+\end_inset
+
+.
+ For 
+\series bold
+y
+\series default
+, the memory does not increase in this situation(R may do something else
+ to reduce the memory).
+ For 
+\series bold
+x
+\series default
+, the memory indeed increases only 32 MB when it run through the code.
+ The total memory spending 64MB before calling the 
+\series bold
+lm.fit
+\series default
+ function.
+ The difference is between the original 156MB an 64MB is 92MB.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<lmfit4>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+fit4 <- mylm4(y ~ x1 + x2 + x3)
+\end_layout
+
+\begin_layout Plain Layout
+
+fit4
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
