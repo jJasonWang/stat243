@@ -114,11 +114,11 @@ options(digits=22)
 
 \begin_layout Standard
 1.
- (a)
+ (a) The accuracy we should have is 16 places.
 \end_layout
 
 \begin_layout Standard
-(b)
+(b) Indeed, the accuracy of sum is 16 places.
 \end_layout
 
 \begin_layout Standard
@@ -160,7 +160,8 @@ sum(x)
 \end_layout
 
 \begin_layout Standard
-(c)
+(c) When using the sum in Python, it loses the accuracy after the decimal
+ point.
 \end_layout
 
 \begin_layout Standard
@@ -226,7 +227,9 @@ print(v0)
 \end_layout
 
 \begin_layout Standard
-(d)
+(d) For the loop in a reversed way, it gives us the correct accuracy while
+ for the original order, it lose the accuracy.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -354,12 +357,30 @@ value
 \end_layout
 
 \begin_layout Standard
+The same thing happens in Python.
+\end_layout
+
+\begin_layout Standard
 \begin_inset ERT
 status open
 
 \begin_layout Plain Layout
 
 <<Pythonfor1, engine='python'>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+import numpy as np 
+\end_layout
+
+\begin_layout Plain Layout
+
+import decimal as dm
+\end_layout
+
+\begin_layout Plain Layout
+
 \end_layout
 
 \begin_layout Plain Layout
@@ -426,6 +447,20 @@ status open
 
 \begin_layout Plain Layout
 
+import numpy as np 
+\end_layout
+
+\begin_layout Plain Layout
+
+import decimal as dm
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
 # 1 is the last term 
 \end_layout
 
@@ -479,7 +514,23 @@ print(v2)
 \end_layout
 
 \begin_layout Standard
+(e)
+\end_layout
+
+\begin_layout Standard
 2.
+ I did three operation, for-loop sum, inverse matrix, subset, to compare
+ the speed between integer and double.
+ 
+\end_layout
+
+\begin_layout Standard
+First, I created a all 1 vector, 
+\series bold
+x
+\series default
+, and use for loop to get the sum of them.
+ The speed for integer is faster than double.
  
 \end_layout
 
@@ -537,7 +588,7 @@ intx <- as.integer(x)
 
 \begin_layout Plain Layout
 
-class(intx) 
+typeof(intx) 
 \end_layout
 
 \begin_layout Plain Layout
@@ -600,7 +651,7 @@ status open
 
 \begin_layout Plain Layout
 
-class(x) 
+typeof(x) 
 \end_layout
 
 \begin_layout Plain Layout
@@ -648,6 +699,15 @@ system.time(
 \end_layout
 
 \begin_layout Standard
+Second, the inverse of matrix, I created a big matrix and use 
+\series bold
+solve
+\series default
+ to get its inverse.
+ It turns that the speed for integer is faster than double.
+\end_layout
+
+\begin_layout Standard
 \begin_inset ERT
 status open
 
@@ -663,13 +723,17 @@ status open
 
 \begin_layout Plain Layout
 
-# Integer intm <- matrix(sample(1:2000, size=1000000, replace=TRUE),   
-          
+# Integer 
 \end_layout
 
 \begin_layout Plain Layout
 
-ncol=1000, nrow=1000)
+intm <- matrix(sample(1:2000, size=1000000, replace=TRUE),             
+\end_layout
+
+\begin_layout Plain Layout
+
+    ncol=1000, nrow=1000)
 \end_layout
 
 \begin_layout Plain Layout
@@ -721,7 +785,7 @@ status open
 
 \begin_layout Plain Layout
 
-m <- apply(m, 1, as.numeric)
+m <- apply(intm, 1, as.numeric)
 \end_layout
 
 \begin_layout Plain Layout
@@ -755,6 +819,23 @@ system.time(solve(m))
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+Finally, the subset, I created a vector 
+\series bold
+x
+\series default
+ from 1 to 100000 and use 
+\series bold
+sample
+\series default
+ to make a random index vector to subset 
+\series bold
+x
+\series default
+.
+ The result again is that integer performs faster than doouble.
 \end_layout
 
 \begin_layout Standard
