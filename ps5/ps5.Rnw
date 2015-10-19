@@ -1,0 +1,221 @@
+%% LyX 2.1.3 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[english]{article}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{geometry}
+\geometry{verbose,tmargin=2.54cm,bmargin=2.54cm,lmargin=3cm,rmargin=3cm}
+\usepackage{babel}
+\begin{document}
+
+\title{STAT243 Problem Set 5}
+
+
+\author{Name: Chih Hui Wang SID: 26955255}
+
+
+\date{October 18, 2015}
+
+\maketitle
+<<setup>>=
+options(digits=22)
+@
+
+1. (a) The accuracy we should have is 16 places.
+
+(b) Indeed, the accuracy of sum is 16 places.
+
+<<sum>>=
+#Create the vector
+x <- c(1, rep(1e-16, 10000)) 
+
+sum(x)
+@
+
+(c) When using the sum in Python, it loses the accuracy after the
+decimal point.
+
+<<Pythonsum, engine='python'>>=
+import numpy as np 
+import decimal as dm 
+
+# Create Vector 
+vec = np.array([1e-16]*(10001)) 
+vec[0] = 1
+
+v0 = dm.Decimal(sum(vec)) 
+print(v0)
+@
+
+(d) For the loop in a reversed way, it gives us the correct accuracy
+while for the original order, it lose the accuracy. 
+
+<<Rfor1>>=
+#1 is the first term 
+value <- 0 
+
+for(i in 1:length(x)){   
+  value <- value + x[i]    
+} 
+
+#Ouput 
+value
+@
+
+<<Rfor2>>=
+#1 is the last term 
+value <- 0
+
+for(i in length(x):1){   
+  value <- value + x[i]    
+} 
+
+#Ouput 
+value
+@
+
+The same thing happens in Python.
+
+<<Pythonfor1, engine='python'>>=
+import numpy as np 
+import decimal as dm
+
+# Create Vector 
+vec = np.array([1e-16]*(10001)) 
+vec[0] = 1
+
+# 1 is the first term 
+value = 0 
+index = np.arange(10000) 
+
+for i in index: 	
+	value = value + vec[i]
+
+v1 = dm.Decimal(value) 
+print(v1)
+@
+
+<<Pythonfor2, engine='python'>>=
+import numpy as np 
+import decimal as dm
+
+# Create Vector 
+vec = np.array([1e-16]*(10001)) 
+vec[0] = 1
+
+# 1 is the last term 
+value = 0 
+index = np.arange(10000) 
+
+for i in reversed(index): 	
+	value = value + vec[i]
+ 
+v2 = dm.Decimal(value) 
+print(v2)
+@
+
+(e) The result of \textbf{sum} indicate that it address the problem
+smartly when there are some extremely small or large number. From
+previous result, it shows that the \textbf{sum} definitely does not
+use the \textbf{for} loop easily from the beginning to end. From the
+help page, it does not show too many details on it. We can use the
+\textbf{show\_c\_source} function in package \textbf{pryr} to look
+the source code of sum(\textbf{show\_c\_source(.Primitive(sum(x)))}).
+
+2. I did three operation, for-loop sum, inverse matrix, subset, to
+compare the speed between integer and double. 
+
+First, I created a all 1 vector, \textbf{x}, and use for loop to get
+the sum of them. The speed for integer is quite similar to double. 
+
+<<integer1>>=
+#Change the output digits back to 7
+options(digits=7)
+
+#for loop 
+x <- rep(1, 10000000) 
+
+#Change data type 
+intx <- as.integer(x) 
+#Examine type
+typeof(intx) 
+
+ins <- 0 
+@
+
+<<double1>>=
+#Examine type
+typeof(x) 
+
+s <- 0 
+
+library(rbenchmark)
+#Comparison
+benchmark(
+  integer=for(i in 1:length(intx)){   
+    ins <- ins + intx[i] 
+  },
+  double=for(i in 1:length(x)){   
+    s <- s + x[i] 
+  },
+  replications=5
+)
+@
+
+Second, the inverse of matrix, I created a big matrix and use \textbf{solve}
+to get its inverse. It turns that the speed for integer is faster
+than double.
+
+<<integer2>>=
+# Inverse of matrix 
+# Integer 
+intm <- matrix(sample(1:2000, size=1000000, replace=TRUE),             
+    ncol=1000, nrow=1000)
+
+#Examine type
+typeof(intm) 
+@
+
+<<double2>>=
+#Change data type 
+m <- apply(intm, 1, as.numeric)
+
+#Examine type
+typeof(m) 
+
+#Comparison
+benchmark(
+  integer=solve(intm),
+  double=solve(m),
+  replications=5
+)
+@
+
+Finally, the subset, I created a vector \textbf{x} from 1 to 100000
+and use \textbf{sample} to make a random index vector to subset \textbf{x}.
+The result is that integer performs faster than doouble.
+
+<<integer3>>=
+# Subsetting 
+# Integer 
+intx <- 1:1000000 
+
+#Examine type
+typeof(intx) 
+@
+
+<<double3>>=
+#Change data type
+x <- as.numeric(x)
+
+#Examine type
+typeof(x) 
+
+#Comparison
+benchmark(
+  integer=intx[sample(length(intx))],
+  double=x[sample(length(x))],
+  replications=5
+)
+@
+\end{document}

@@ -567,20 +567,6 @@ sum
 for
 \series default
  loop easily from the beginning to end.
- From the help page, it does not show too many details on it.
- We can use the 
-\series bold
-show_c_source
-\series default
- function in package 
-\series bold
-pryr
-\series default
- to look the source code of sum(
-\series bold
-show_c_source(.Primitive(sum(x)))
-\series default
-).
 \end_layout
 
 \begin_layout Standard
