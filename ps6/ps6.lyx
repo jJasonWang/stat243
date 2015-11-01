@@ -1,0 +1,2443 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\begin_modules
+knitr
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 3cm
+\topmargin 2.54cm
+\rightmargin 3cm
+\bottommargin 2.54cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+STAT243 Problem Set 6
+\end_layout
+
+\begin_layout Author
+Name: Chih Hui Wang SID: 26955255
+\end_layout
+
+\begin_layout Date
+October 20, 2015
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<setup, include=FALSE>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+knitr::opts_chunk$set(eval=FALSE)  
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+1.
+ My strategy to build up the table is that I will first read in the data
+ and use the function 
+\series bold
+dbWriteTable
+\series default
+ with 
+\series bold
+append = TRUE
+\series default
+.
+ By doing so, we can keep appending data for each year into the database.
+ Here, I used 
+\series bold
+fread
+\series default
+ function in the package 
+\series bold
+data.table
+\series default
+.
+ It can combine with the bash code to read in data like 
+\series bold
+fread('bunzip2 -c filename')
+\series default
+ and it performs faster than 
+\series bold
+read.csv
+\series default
+.
+ To deal with the 
+\series bold
+NA
+\series default
+ value, I replace all the 
+\series bold
+NA
+\series default
+ with 9999 and I also do a sanity check and there is no any 9999 in the
+ DepDelay for each year.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<library>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(data.table) 
+\end_layout
+
+\begin_layout Plain Layout
+
+library(RSQLite)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<createDB>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#Create database 
+\end_layout
+
+\begin_layout Plain Layout
+
+db <- dbConnect(SQLite(), dbname="Flight.sqlite")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Length to check that the function read the data correctly 
+\end_layout
+
+\begin_layout Plain Layout
+
+l <- 0 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Record whether there is obersvation is 9999 
+\end_layout
+
+\begin_layout Plain Layout
+
+nine4 <- 0 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Start to create table in database 
+\end_layout
+
+\begin_layout Plain Layout
+
+for(i in 1987:2008){   
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Construct the command to read data   
+\end_layout
+
+\begin_layout Plain Layout
+
+  in_file <- paste("bunzip2 -c ", i, ".csv.bz2", sep="") 
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Read data   
+\end_layout
+
+\begin_layout Plain Layout
+
+  data <- fread(in_file, data.table=FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Check 9999   
+\end_layout
+
+\begin_layout Plain Layout
+
+  nine4 <- nine4 + sum(data$DepDelay[!is.na(data$DepDelay)] == 9999)
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Replace NA with unmeaningful number for later filter   
+\end_layout
+
+\begin_layout Plain Layout
+
+  data[which(is.na(data$DepDelay)), "DepDelay"] <- 9999  
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Check length   
+\end_layout
+
+\begin_layout Plain Layout
+
+  l <- l + dim(data)[1]
+\end_layout
+
+\begin_layout Plain Layout
+
+   
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Write data into the Flight table   
+\end_layout
+
+\begin_layout Plain Layout
+
+  dbWriteTable(conn=db, name="Flight", value=data, append=TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+     
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Remove data   
+\end_layout
+
+\begin_layout Plain Layout
+
+  rm(data) 
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Total observation
+\end_layout
+
+\begin_layout Plain Layout
+
+l 
+\end_layout
+
+\begin_layout Plain Layout
+
+## [1] 123534969
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#No observation's DepDelay is 9999
+\end_layout
+
+\begin_layout Plain Layout
+
+nine4
+\end_layout
+
+\begin_layout Plain Layout
+
+## [1] 0
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Query: Count the total number of rows 
+\end_layout
+
+\begin_layout Plain Layout
+
+query <- "select count(*) from Flight" 
+\end_layout
+
+\begin_layout Plain Layout
+
+dbGetQuery(db, query)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Match the previous row numbers
+\end_layout
+
+\begin_layout Plain Layout
+
+##   count(*)
+\end_layout
+
+\begin_layout Plain Layout
+
+## 1 123534969
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The database file is approximately 8.8Gb, which is smaller than the original
+ CSV file.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<bash1, engine='bash'>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ls -lh
+\end_layout
+
+\begin_layout Plain Layout
+
+## -rw-r--r--  1 ubuntu ubuntu 8.8G Oct 21 23:27 Flight.sqlite 
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+2.
+ (a) SQLite: For the problem, I recreate a database.
+ I remove the row for DepDelay with NA and change all the coding of Month
+ (Jan-Dec), DayofWeek(Mon-Sun) and CRSDepTime(0-24) as well.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<createDBnoNA>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#Change the column coding in Month and DayOfWeek
+\end_layout
+
+\begin_layout Plain Layout
+
+myweek <- function(x){
+\end_layout
+
+\begin_layout Plain Layout
+
+  week <- c("Monday", "Tuesday", "Wednesday", "Thursday",
+\end_layout
+
+\begin_layout Plain Layout
+
+            "Friday", "Saturday", "Sunday")
+\end_layout
+
+\begin_layout Plain Layout
+
+  week[x]
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+mymonth <- function(x){
+\end_layout
+
+\begin_layout Plain Layout
+
+  month <- c("January", "February", "March", "April", "May",
+\end_layout
+
+\begin_layout Plain Layout
+
+             "June", "July", "August", "September", "October",
+\end_layout
+
+\begin_layout Plain Layout
+
+             "November", "December")
+\end_layout
+
+\begin_layout Plain Layout
+
+  month[x]
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Start to create table in database
+\end_layout
+
+\begin_layout Plain Layout
+
+for(i in 1987:2008){
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Construct the command to read data
+\end_layout
+
+\begin_layout Plain Layout
+
+  in_file <- paste("bunzip2 -c ", i, ".csv.bz2", sep="")
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Read data
+\end_layout
+
+\begin_layout Plain Layout
+
+  data <- fread(in_file, data.table=FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Change Month, DayOfWeek, CRSDepTime
+\end_layout
+
+\begin_layout Plain Layout
+
+  data$Month <- mymonth(data$Month)
+\end_layout
+
+\begin_layout Plain Layout
+
+  data$DayOfWeek <- myweek(data$DayOfWeek)
+\end_layout
+
+\begin_layout Plain Layout
+
+  data$CRSDepTime <- data$CRSDepTime %/% 100
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Write data into the Flight table
+\end_layout
+
+\begin_layout Plain Layout
+
+  dbWriteTable(conn=db, name="FlightnoNA", value=data[!is.na(data$DepDelay),
+ ], append=TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Remove data
+\end_layout
+
+\begin_layout Plain Layout
+
+  rm(data)
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Query: Count the total number of rows 
+\end_layout
+
+\begin_layout Plain Layout
+
+query <- "select count(*) from FlightnoNA" 
+\end_layout
+
+\begin_layout Plain Layout
+
+dbGetQuery(db, query)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+##   count(*)
+\end_layout
+
+\begin_layout Plain Layout
+
+##1 121232833
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For Spark: I first write the 
+\series bold
+removeNA
+\series default
+ to remove the row with NA.
+ Also, I remove the column name too.
+ Then, use 
+\series bold
+filter
+\series default
+ to subset the data and count the total number of line in the data.
+ It is the same with the result from R.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<spark_subset, engine='python'>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+from operator import add
+\end_layout
+
+\begin_layout Plain Layout
+
+import numpy as np
+\end_layout
+
+\begin_layout Plain Layout
+
+import time
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lines = sc.textFile('/data/airline')
+\end_layout
+
+\begin_layout Plain Layout
+
+# Remove NA as well as the line for column name
+\end_layout
+
+\begin_layout Plain Layout
+
+def removeNA(line):
+\end_layout
+
+\begin_layout Plain Layout
+
+	vals = line.split(',')
+\end_layout
+
+\begin_layout Plain Layout
+
+	return(vals[0] != 'Year' and vals[15] != 'NA')
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Repartition the data
+\end_layout
+
+\begin_layout Plain Layout
+
+lines = lines.filter(removeNA).repartition(192).cache()
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Count how many line in the data to compare with the result by R
+\end_layout
+
+\begin_layout Plain Layout
+
+# The Result is the same
+\end_layout
+
+\begin_layout Plain Layout
+
+numLines = lines.count()
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+## took 218.625398 s
+\end_layout
+
+\begin_layout Plain Layout
+
+## 121232833
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+(b) SQLite: For the query part, I use 
+\series bold
+group by
+\series default
+ those column we interested in and 
+\series bold
+sum
+\series default
+ with 
+\series bold
+case when
+\series default
+ to compute the number of flight with DepDelay bigger than 30, 60, 180 minutes.
+ It took around 12 minutes to finish.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<SQL>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+query_late <- 
+\end_layout
+
+\begin_layout Plain Layout
+
+"select UniqueCarrier, Origin, Dest, Month, DayOfWeek, CRSDepTime, count(*)
+ as Count,
+\end_layout
+
+\begin_layout Plain Layout
+
+        sum(case when DepDelay > 30 then 1 else 0 end)*1.0/count(*) as Prop30,
+\end_layout
+
+\begin_layout Plain Layout
+
+        sum(case when DepDelay > 60 then 1 else 0 end)*1.0/count(*) as Prop60,
+\end_layout
+
+\begin_layout Plain Layout
+
+        sum(case when DepDelay > 180 then 1 else 0 end)*1.0/count(*) as Prop180
+\end_layout
+
+\begin_layout Plain Layout
+
+ from FlightnoNA
+\end_layout
+
+\begin_layout Plain Layout
+
+ group by UniqueCarrier, Origin, Dest, Month, DayOfWeek, CRSDepTime"
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+system.time(result <- dbGetQuery(db, query_late))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+##    user  system elapsed 
+\end_layout
+
+\begin_layout Plain Layout
+
+## 639.408  42.716 729.523
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+head(result, n=10)
+\end_layout
+
+\begin_layout Plain Layout
+
+##    UniqueCarrier Origin Dest Month DayOfWeek CRSDepTime Count    Prop30
+    Prop60 Prop180
+\end_layout
+
+\begin_layout Plain Layout
+
+## 1             9E    ABE  DTW April    Friday          6     8 0.0000000
+ 0.0000000       0
+\end_layout
+
+\begin_layout Plain Layout
+
+## 2             9E    ABE  DTW April    Friday         12     8 0.0000000
+ 0.0000000       0
+\end_layout
+
+\begin_layout Plain Layout
+
+## 3             9E    ABE  DTW April    Friday         16     8 0.0000000
+ 0.0000000       0
+\end_layout
+
+\begin_layout Plain Layout
+
+## 4             9E    ABE  DTW April    Monday          6     9 0.0000000
+ 0.0000000       0
+\end_layout
+
+\begin_layout Plain Layout
+
+## 5             9E    ABE  DTW April    Monday         12     9 0.0000000
+ 0.0000000       0
+\end_layout
+
+\begin_layout Plain Layout
+
+## 6             9E    ABE  DTW April    Monday         16     9 0.0000000
+ 0.0000000       0
+\end_layout
+
+\begin_layout Plain Layout
+
+## 7             9E    ABE  DTW April  Saturday         12     8 0.0000000
+ 0.0000000       0
+\end_layout
+
+\begin_layout Plain Layout
+
+## 8             9E    ABE  DTW April  Saturday         16     5 0.0000000
+ 0.0000000       0
+\end_layout
+
+\begin_layout Plain Layout
+
+## 9             9E    ABE  DTW April    Sunday         12     9 0.1111111
+ 0.1111111       0
+\end_layout
+
+\begin_layout Plain Layout
+
+## 10            9E    ABE  DTW April    Sunday         16     9 0.2222222
+ 0.0000000       0
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Spark: I write a 
+\series bold
+map
+\series default
+ funcition, 
+\series bold
+count_late_flight
+\series default
+.
+ I change the CRSDeptime into hour bin, let it join with other column and
+ use the combination as a key.
+ For the value, I return a list with 4 value, count whether the DepDelay
+ is more than 30, 60, 180 minutes repectively and 1.
+ For the reduce part, I write a function, 
+\series bold
+sum_v
+\series default
+, to add up each value in the list individually.
+ By using 
+\series bold
+reduceByKey
+\series default
+, we can get the counts for flights more than 30, 60, 180 late and total
+ count.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<spark_calculate_late, engine='python'>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+# Map funcition Flight late
+\end_layout
+
+\begin_layout Plain Layout
+
+def count_late_flight(line):
+\end_layout
+
+\begin_layout Plain Layout
+
+	vals = line.split(',')
+\end_layout
+
+\begin_layout Plain Layout
+
+	CRSDep = int(vals[5]) // 100
+\end_layout
+
+\begin_layout Plain Layout
+
+	# Key is Uniquecarrier-Origin-Dest-Month-DayOfWeek-CRSDepTime
+\end_layout
+
+\begin_layout Plain Layout
+
+	keyVals = '-'.join([vals[8],vals[16],vals[17],vals[1],vals[3], str(CRSDep)])
+\end_layout
+
+\begin_layout Plain Layout
+
+	x1 = 0
+\end_layout
+
+\begin_layout Plain Layout
+
+	x2 = 0
+\end_layout
+
+\begin_layout Plain Layout
+
+	x3 = 0
+\end_layout
+
+\begin_layout Plain Layout
+
+	if int(vals[15]) > 30:
+\end_layout
+
+\begin_layout Plain Layout
+
+		x1 = 1
+\end_layout
+
+\begin_layout Plain Layout
+
+	if int(vals[15]) > 60:
+\end_layout
+
+\begin_layout Plain Layout
+
+		x2 = 1
+\end_layout
+
+\begin_layout Plain Layout
+
+	if int(vals[15]) > 180:
+\end_layout
+
+\begin_layout Plain Layout
+
+		x3 = 1
+\end_layout
+
+\begin_layout Plain Layout
+
+	return(keyVals, [x1, x2, x3, 1])
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Reduce funcition (add up the element in the list)
+\end_layout
+
+\begin_layout Plain Layout
+
+sum_v = lambda x, y: [x[0] + y[0], x[1] + y[1], x[2] + y[2], x[3] + y[3]]
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Time evaluation
+\end_layout
+
+\begin_layout Plain Layout
+
+start_time = timeit.default_timer()
+\end_layout
+
+\begin_layout Plain Layout
+
+Flightlate = lines.map(count_late_flight).reduceByKey(sum_v).collect()
+\end_layout
+
+\begin_layout Plain Layout
+
+elapsed = timeit.default_timer() - start_time
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+elapsed
+\end_layout
+
+\begin_layout Plain Layout
+
+## 146.9846
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Flightlate[0:10]
+\end_layout
+
+\begin_layout Plain Layout
+
+## [(u'TW-STL-ICT-8-6-9', [0, 0, 0, 34]), (u'CO-IAH-MAF-3-2-14', [2, 1,
+ 0, 31]), 
+\end_layout
+
+\begin_layout Plain Layout
+
+## (u'WN-RDU-PHX-1-7-11', [0, 0, 0, 3]), (u'EA-ATL-MLB-12-2-17', [0, 0,
+ 0, 9]), 
+\end_layout
+
+\begin_layout Plain Layout
+
+## (u'XE-MSY-CLE-4-6-13', [1, 0, 0, 9]), (u'PI-RIC-SDF-6-4-13', [2, 1, 1,
+ 3]), 
+\end_layout
+
+\begin_layout Plain Layout
+
+## (u'NW-MKE-DTW-2-2-8', [0, 0, 0, 4]), (u'UA-ROC-ORD-3-7-16', [6, 4, 1,
+ 37]), 
+\end_layout
+
+\begin_layout Plain Layout
+
+## (u'DL-JAN-MLU-12-3-22', [2, 1, 0, 4]), (u'US-LAS-LAX-9-1-23', [0, 0,
+ 0, 9])]
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+(c) Spark: This beginning part is the same as previous problem.
+ To compute the proportion, I write a function 
+\series bold
+proportion
+\series default
+ and use 
+\series bold
+mapValues
+\series default
+ to calculate the proportion.
+ Then, I ue another map step to run my 
+\series bold
+strprocess
+\series default
+ to make the ouput into comma seperated string.
+ Finally, save it and see the result from bash.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<sparkresult, engine='python'>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+# Compute the proportion
+\end_layout
+
+\begin_layout Plain Layout
+
+proportion = lambda x: [round(float(x[0])/float(x[3]), 4), round(float(x[1])/flo
+at(x[3]), 4), round(float(x[2])/float(x[3]), 4), x[3]]
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# String process, comma-delimited
+\end_layout
+
+\begin_layout Plain Layout
+
+def strprocess (x):
+\end_layout
+
+\begin_layout Plain Layout
+
+	return(",".join([x[0], str(x[1]).replace("[", "").replace("]", "")]))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Since it is too long, I break it into pieces in the following comments
+\end_layout
+
+\begin_layout Plain Layout
+
+# mytry = lines.map(count_late_flight).reduceByKey(sum_v).
+\end_layout
+
+\begin_layout Plain Layout
+
+# mapValues(proportion).map(strprocess).repartition(1).
+\end_layout
+
+\begin_layout Plain Layout
+
+# saveAsTextFile('/data/FlightLateCount')
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+mytry = lines.map(count_late_flight).reduceByKey(sum_v).mapValues(proportion).map(st
+rprocess).repartition(1).saveAsTextFile('/data/FlightLateCount.txt')
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# The following is bash code
+\end_layout
+
+\begin_layout Plain Layout
+
+hadoop fs -ls /data
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+## Found 2 items
+\end_layout
+
+\begin_layout Plain Layout
+
+## drwxr-xr-x   - root supergroup          0 2015-10-31 01:32 /data/FlightLateCo
+unt
+\end_layout
+
+\begin_layout Plain Layout
+
+## drwxr-xr-x   - root supergroup          0 2015-10-30 23:30 /data/airline
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+hadoop fs -ls /data/FlightLateCount
+\end_layout
+
+\begin_layout Plain Layout
+
+## -rw-r--r--   3 root supergroup          0 2015-10-31 01:32 /data/FlightLateCo
+unt/_SUCCESS
+\end_layout
+
+\begin_layout Plain Layout
+
+## -rw-r--r--   3 root supergroup  281745552 2015-10-31 01:32 /data/FlightLateCo
+unt/part-00000
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+hadoop fs -cat /data/FlightLateCount/part-00000 | head
+\end_layout
+
+\begin_layout Plain Layout
+
+## WN-BWI-FLL-5-2-9,0.0, 0.0, 0.0, 5
+\end_layout
+
+\begin_layout Plain Layout
+
+## WN-MCO-PIT-5-6-20,0.0, 0.0, 0.0, 2
+\end_layout
+
+\begin_layout Plain Layout
+
+## AA-DFW-AUS-2-3-6,0.0208, 0.0208, 0.0, 48
+\end_layout
+
+\begin_layout Plain Layout
+
+## DL-PHX-DFW-11-7-8,0.0222, 0.0222, 0.0, 45
+\end_layout
+
+\begin_layout Plain Layout
+
+## NW-MSP-PIT-10-2-15,0.0714, 0.0714, 0.0, 14
+\end_layout
+
+\begin_layout Plain Layout
+
+## YV-IAD-BUF-7-6-16,0.25, 0.25, 0.0, 4
+\end_layout
+
+\begin_layout Plain Layout
+
+## MQ-MIA-CLT-10-6-15,0.0, 0.0, 0.0, 4
+\end_layout
+
+\begin_layout Plain Layout
+
+## CO-DAB-EWR-3-4-7,0.0909, 0.0, 0.0, 11
+\end_layout
+
+\begin_layout Plain Layout
+
+## XE-RDU-SAT-9-3-9,0.0, 0.0, 0.0, 3
+\end_layout
+
+\begin_layout Plain Layout
+
+## WN-PBI-ISP-11-6-18,0.2857, 0.1429, 0.0, 7
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+(d) SQLite: To create index, I use the SQL syntax 
+\begin_inset Quotes eld
+\end_inset
+
+create index table on column
+\begin_inset Quotes erd
+\end_inset
+
+ to construct the key on the field UniqueCarrier, Origin, Dest, Month, DayOfWeek
+, CRSDepTime.
+ Then, I can use the index field to do query.
+ It turns out that the index will speed up the query and it takes around
+ 9minutes finish the query.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Key>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+create_index <- 
+\end_layout
+
+\begin_layout Plain Layout
+
+"create index flightindex
+\end_layout
+
+\begin_layout Plain Layout
+
+ on FlightnoNA (UniqueCarrier, Origin, Dest, Month, DayOfWeek, CRSDepTime)"
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+dbSendQuery(db, create_index)
+\end_layout
+
+\begin_layout Plain Layout
+
+## <SQLiteResult>
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Time with index
+\end_layout
+
+\begin_layout Plain Layout
+
+system.time(result <- dbGetQuery(db, query_late))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+##    user  system elapsed 
+\end_layout
+
+\begin_layout Plain Layout
+
+## 234.052  29.604 537.780
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+(e) To list out the proportion of late flight for those groupings with at
+ least 150 flights, I use 
+\series bold
+filter
+\series default
+ to remove those group with less than 150 flights.
+ Then, 
+\series bold
+arrange
+\series default
+d by proportion of late flight to get the result.
+ 
+\end_layout
+
+\begin_layout Standard
+Interestingly, for the top 5 flights more than 30 minutes late, the groups
+ are all from Southwest Airlines (WN).
+ Also, the flights' destination and origin airport are William P.
+ Hobby Airport(HOU) and Dallas Love Field(DAL).
+ Finally, they were all on Friday night.
+ For the top 5 flights more than 60 minutes late, there are 4 from United
+ Airlines and most of them are flight from SFO to LAX and LAX to SFO.
+ For the top 5 flights more than 180 minutes late, all of them are from
+ American Airlines.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<SQLmorethan150>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(dplyr)
+\end_layout
+
+\begin_layout Plain Layout
+
+#----------Flights more than 30 mins late----------
+\end_layout
+
+\begin_layout Plain Layout
+
+result %>%
+\end_layout
+
+\begin_layout Plain Layout
+
+  select(UniqueCarrier, UniqueCarrier, Origin, Dest, Month,
+\end_layout
+
+\begin_layout Plain Layout
+
+         DayOfWeek, CRSDepTime, Count, Prop30) %>%
+\end_layout
+
+\begin_layout Plain Layout
+
+  filter(Count > 150) %>%
+\end_layout
+
+\begin_layout Plain Layout
+
+  arrange(desc(Prop30)) %>%
+\end_layout
+
+\begin_layout Plain Layout
+
+  head(n=5)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+##   UniqueCarrier Origin Dest    Month DayOfWeek CRSDepTime Count    Prop30
+\end_layout
+
+\begin_layout Plain Layout
+
+## 1            WN    DAL  HOU     June    Friday         20   160 0.4125000
+\end_layout
+
+\begin_layout Plain Layout
+
+## 2            WN    HOU  DAL February    Friday         19   151 0.4039735
+\end_layout
+
+\begin_layout Plain Layout
+
+## 3            WN    DAL  HOU     June    Friday         21   152 0.3750000
+\end_layout
+
+\begin_layout Plain Layout
+
+## 4            WN    HOU  DAL     June    Friday         19   163 0.3680982
+\end_layout
+
+\begin_layout Plain Layout
+
+## 5            WN    DAL  HOU    March    Friday         20   158 0.3670886
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#----------Flights more than 60 mins late----------
+\end_layout
+
+\begin_layout Plain Layout
+
+result %>%
+\end_layout
+
+\begin_layout Plain Layout
+
+  select(UniqueCarrier, UniqueCarrier, Origin, Dest, Month,
+\end_layout
+
+\begin_layout Plain Layout
+
+         DayOfWeek, CRSDepTime, Count, Prop60) %>%
+\end_layout
+
+\begin_layout Plain Layout
+
+  filter(Count > 150) %>%
+\end_layout
+
+\begin_layout Plain Layout
+
+  arrange(desc(Prop60)) %>%
+\end_layout
+
+\begin_layout Plain Layout
+
+  head(n=5)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+##    UniqueCarrier Origin Dest    Month DayOfWeek CRSDepTime Count    Prop60
+\end_layout
+
+\begin_layout Plain Layout
+
+##  1            UA    LAX  SFO December    Friday         11   162 0.2222222
+\end_layout
+
+\begin_layout Plain Layout
+
+##  2            UA    LAX  SFO  October    Friday         16   151 0.1986755
+\end_layout
+
+\begin_layout Plain Layout
+
+##  3            UA    LAX  SFO December    Friday         18   160 0.1937500
+\end_layout
+
+\begin_layout Plain Layout
+
+##  4            AA    ORD  LAX  January  Thursday          0   181 0.1878453
+\end_layout
+
+\begin_layout Plain Layout
+
+##  5            UA    SFO  LAX December    Friday         18   182 0.1868132
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#----------Flights more than 180 mins late----------
+\end_layout
+
+\begin_layout Plain Layout
+
+result %>%
+\end_layout
+
+\begin_layout Plain Layout
+
+  select(UniqueCarrier, UniqueCarrier, Origin, Dest, Month,
+\end_layout
+
+\begin_layout Plain Layout
+
+         DayOfWeek, CRSDepTime, Count, Prop180) %>%
+\end_layout
+
+\begin_layout Plain Layout
+
+  filter(Count > 150) %>%
+\end_layout
+
+\begin_layout Plain Layout
+
+  arrange(desc(Prop180)) %>%
+\end_layout
+
+\begin_layout Plain Layout
+
+  head(n=5)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+##    UniqueCarrier Origin Dest    Month DayOfWeek CRSDepTime Count    Prop180
+\end_layout
+
+\begin_layout Plain Layout
+
+##  1            AA    BOS  ORD December   Tuesday          0   197 0.04568528
+\end_layout
+
+\begin_layout Plain Layout
+
+##  2            AA    ORD  LGA December Wednesday          0   177 0.03954802
+\end_layout
+
+\begin_layout Plain Layout
+
+##  3            AA    ORD  DFW  January  Thursday          0   304 0.03947368
+\end_layout
+
+\begin_layout Plain Layout
+
+##  4            AA    LGA  ORD December Wednesday          0   185 0.03783784
+\end_layout
+
+\begin_layout Plain Layout
+
+##  5            AA    ORD  LGA  January  Thursday          0   187 0.03743316
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+3.
+ From previous problem, we know that it takes about 9 minute to finish query
+ if we don't do any parallel computing.
+ I use 
+\series bold
+foreach
+\series default
+ to parallel the query.
+ I use 4 cores.
+ My taskfun is to seperate the query into 4 parts by the Month.
+ The first core will do the query for Jan, Feb and Mar and the second core
+ will do the query for Apr, May, Jun so on and sorth.
+ Then, use 
+\series bold
+rbind
+\series default
+ to combine all the query result together.
+ To prevent some repeated work, I write a function 
+\series bold
+query_parallel
+\series default
+ which I can pass the months in and it will output the query for processing
+ those months.
+ For parallel computing, it took 6 minute to finish the query.
+ I also do a check to see whether the result of two method are the same.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Comparsion>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#----------Parallel----------
+\end_layout
+
+\begin_layout Plain Layout
+
+library(doParallel)
+\end_layout
+
+\begin_layout Plain Layout
+
+library(foreach)
+\end_layout
+
+\begin_layout Plain Layout
+
+library(iterators)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#set up
+\end_layout
+
+\begin_layout Plain Layout
+
+nCores <- 4 
+\end_layout
+
+\begin_layout Plain Layout
+
+registerDoParallel(nCores)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+query_parallel <- function(month){
+\end_layout
+
+\begin_layout Plain Layout
+
+ paste(
+\end_layout
+
+\begin_layout Plain Layout
+
+  "select UniqueCarrier, Origin, Dest, Month, DayOfWeek, CRSDepTime, count(*)
+ as Count,
+\end_layout
+
+\begin_layout Plain Layout
+
+          sum(case when DepDelay > 30 then 1 else 0 end)*1.0/count(*) as
+ Prop30,
+\end_layout
+
+\begin_layout Plain Layout
+
+          sum(case when DepDelay > 60 then 1 else 0 end)*1.0/count(*) as
+ Prop60,
+\end_layout
+
+\begin_layout Plain Layout
+
+          sum(case when DepDelay > 180 then 1 else 0 end)*1.0/count(*) as
+ Prop180
+\end_layout
+
+\begin_layout Plain Layout
+
+   from FlightnoNA
+\end_layout
+
+\begin_layout Plain Layout
+
+   where Month in (", month, ") 
+\end_layout
+
+\begin_layout Plain Layout
+
+   group by UniqueCarrier, Origin, Dest, Month, DayOfWeek, CRSDepTime",
+ sep="")
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Task function
+\end_layout
+
+\begin_layout Plain Layout
+
+taskFun <- function(i){
+\end_layout
+
+\begin_layout Plain Layout
+
+  if(i == 1){
+\end_layout
+
+\begin_layout Plain Layout
+
+    #Set up Connection
+\end_layout
+
+\begin_layout Plain Layout
+
+    con1 <- dbConnect(SQLite(), dbname="Flight.sqlite")
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\end_layout
+
+\begin_layout Plain Layout
+
+    #Query
+\end_layout
+
+\begin_layout Plain Layout
+
+    query_1 <- query_parallel("'January', 'February', 'March'")
+\end_layout
+
+\begin_layout Plain Layout
+
+    #Do Query
+\end_layout
+
+\begin_layout Plain Layout
+
+    dbGetQuery(con1, query_1)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  }else if(i == 2){
+\end_layout
+
+\begin_layout Plain Layout
+
+    con2 <- dbConnect(SQLite(), dbname="Flight.sqlite")
+\end_layout
+
+\begin_layout Plain Layout
+
+    query_2 <- query_parallel("'April', 'May', 'June'")
+\end_layout
+
+\begin_layout Plain Layout
+
+    dbGetQuery(con2, query_2)
+\end_layout
+
+\begin_layout Plain Layout
+
+  }else if(i == 3){
+\end_layout
+
+\begin_layout Plain Layout
+
+    con3 <- dbConnect(SQLite(), dbname="Flight.sqlite")
+\end_layout
+
+\begin_layout Plain Layout
+
+    query_3 <- query_parallel("'July', 'August', 'September'")
+\end_layout
+
+\begin_layout Plain Layout
+
+    dbGetQuery(con3, query_3)
+\end_layout
+
+\begin_layout Plain Layout
+
+  }else{
+\end_layout
+
+\begin_layout Plain Layout
+
+  	con4 <- dbConnect(SQLite(), dbname="Flight.sqlite")
+\end_layout
+
+\begin_layout Plain Layout
+
+  	query_4 <- query_parallel("'October', 'November', 'December'")
+\end_layout
+
+\begin_layout Plain Layout
+
+    dbGetQuery(con4, query_4)
+\end_layout
+
+\begin_layout Plain Layout
+
+  }
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+system.time(
+\end_layout
+
+\begin_layout Plain Layout
+
+out <- foreach(i = 1:4, .combine = rbind) %dopar% {
+\end_layout
+
+\begin_layout Plain Layout
+
+  cat('Starting ', i, 'th job at ', format(Sys.time(), "%a %b %d %X"), '.
+\backslash
+n', sep = '')
+\end_layout
+
+\begin_layout Plain Layout
+
+  outSub <- taskFun(i)
+\end_layout
+
+\begin_layout Plain Layout
+
+  cat('Finishing ', i, 'th job at ', format(Sys.time(), "%a %b %d %X"), '.
+\backslash
+n', sep = '')
+\end_layout
+
+\begin_layout Plain Layout
+
+  outSub # this will become part of the out object
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+## Starting 1th job at Sat Oct 31 11:38:46 PM.
+\end_layout
+
+\begin_layout Plain Layout
+
+## Starting 2th job at Sat Oct 31 11:38:46 PM.
+\end_layout
+
+\begin_layout Plain Layout
+
+## Starting 3th job at Sat Oct 31 11:38:46 PM.
+\end_layout
+
+\begin_layout Plain Layout
+
+## Starting 4th job at Sat Oct 31 11:38:46 PM.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+##    user  system elapsed 
+\end_layout
+
+\begin_layout Plain Layout
+
+## 393.488  42.884 331.329 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+## Finishing 1th job at Sat Oct 31 11:43:59 PM.
+\end_layout
+
+\begin_layout Plain Layout
+
+## Finishing 2th job at Sat Oct 31 11:43:59 PM.
+\end_layout
+
+\begin_layout Plain Layout
+
+## Finishing 3th job at Sat Oct 31 11:44:07 PM.
+\end_layout
+
+\begin_layout Plain Layout
+
+## Finishing 4th job at Sat Oct 31 11:44:11 PM.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Check query result
+\end_layout
+
+\begin_layout Plain Layout
+
+all.equal(sort(result$Prop30), sort(out$Prop30))
+\end_layout
+
+\begin_layout Plain Layout
+
+[1] TRUE
+\end_layout
+
+\begin_layout Plain Layout
+
+all.equal(sort(result$Prop60), sort(out$Prop60))
+\end_layout
+
+\begin_layout Plain Layout
+
+[1] TRUE
+\end_layout
+
+\begin_layout Plain Layout
+
+all.equal(sort(result$Prop180), sort(out$Prop180))
+\end_layout
+
+\begin_layout Plain Layout
+
+[1] TRUE
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+4.
+ Because the 
+\series bold
+fread
+\series default
+ function can process the shell command, I directly find out the column
+ we needed in R and use 
+\series bold
+paste
+\series default
+ function to concatenate the bash code for removing column with previous
+ command.
+ For example, when it read the data for 1987, the in_file will be "bunzip2
+ -c 1987.csv.bz2 | cut -d',' -f2,4,6,9,16,17,18", which the command after
+ pipe is to eliminate the column we do not need.
+\end_layout
+
+\begin_layout Standard
+The time for constructing the table without removing any column is around
+ 16 minutes while the time with removing some column is around 10 minutes.
+ For the question whether it is a worthwhile preprocessing step, if only
+ considering the speed, I will think the answer is yes.
+ However, for overall purpose, I think it is not worthwhile to remove 22
+ columns just for speeding up the creating the database, because the time
+ did not dramatically decrease.
+ Also, there may be other analysis we want to do on other columns.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Removecolumn>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#Remove unwant column
+\end_layout
+
+\begin_layout Plain Layout
+
+head <- read.csv("1987.csv.bz2", nrows=1, header=FALSE, stringsAsFactors=FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+col_need <- c("UniqueCarrier", "Origin", "Dest", "Month",
+\end_layout
+
+\begin_layout Plain Layout
+
+              "DayOfWeek", "CRSDepTime", "DepDelay")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Find out the position of columns we need
+\end_layout
+
+\begin_layout Plain Layout
+
+position <- paste(which(head %in% col_need), collapse=",")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Calculate Time
+\end_layout
+
+\begin_layout Plain Layout
+
+system.time(
+\end_layout
+
+\begin_layout Plain Layout
+
+for(i in 1987:2008){   
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Construct the command to read data   
+\end_layout
+
+\begin_layout Plain Layout
+
+  in_file <- paste("bunzip2 -c ", i, ".csv.bz2",
+\end_layout
+
+\begin_layout Plain Layout
+
+                   " | cut -d',' -f", position,  sep="") 
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Read data   
+\end_layout
+
+\begin_layout Plain Layout
+
+  data <- fread(in_file, data.table=FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Replace NA with unmeaningful number for later filter   
+\end_layout
+
+\begin_layout Plain Layout
+
+  data[which(is.na(data$DepDelay)), "DepDelay"] <- 9999  
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Write data into the Flight table   
+\end_layout
+
+\begin_layout Plain Layout
+
+  dbWriteTable(conn=db, name="Flight", value=data, append=TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Remove data   
+\end_layout
+
+\begin_layout Plain Layout
+
+  rm(data) 
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+)
+\end_layout
+
+\begin_layout Plain Layout
+
+#Time for removing some column not needed
+\end_layout
+
+\begin_layout Plain Layout
+
+##    user  system elapsed 
+\end_layout
+
+\begin_layout Plain Layout
+
+## 655.936  43.804 605.008 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#The following output is the time for creating the table without removing
+ any columns
+\end_layout
+
+\begin_layout Plain Layout
+
+##    user   system  elapsed 
+\end_layout
+
+\begin_layout Plain Layout
+
+## 928.932   57.132 1000.483 
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
