@@ -28,7 +28,8 @@ number, parameters of normal distribution.
 * Do their figures/tables do a good job of presenting the simulation results and do you have any alternative suggestions
 for how to do this? Do the authors address the issue of simulation uncertainty/simulation standard errors and/or do they
 convince the reader they've done enough simulation replications?
-I do not think that their figures/tables give a very clear summary about their simulation study. They have set up 12 null models with order 2, used them to calculate the Type I error based on 5000 replications and summarized by boxplot. However, 
+I do not think that their figures/tables give a very clear summary about their simulation study. They have set up 12 null
+models with order 2, used them to calculate the Type I error based on 5000 replications and summarized by boxplot. However, 
 I wondered why there is only 1 boxplot for each scenario (different sample sizes and significant levels). Are there supposed
 to have boxplot to summarize each null model? The same things happened when computing powers. They give table to summarize the
 power under different scenarios (different sample size, numbers of iteration, combinations of alternative θ and σ, weights)
