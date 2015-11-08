@@ -19,24 +19,23 @@ Maybe they can consider the scenarios that the null order is 1 and compare it wi
 
 * Give some thoughts on how to set up a simulation study for their problem that uses principles of basic experimental 
 design (see the Unit 10 notes) or if you think it would be difficult, say why.
-The part for generating random number from mixture normal distribution will not be too difficult. For two mixture 
-normal, we can do by generating random number from two normal distributions. After that, we create another random number 
-with value 0s and 1s to decide the ith observation is from which normal distribution. The proportion of 0s in the random
-number is £\1 while the proportion of 1s is £\2. The difficult part of the simulation study is to choose the appropriate
-sample size, replication number, parameters of normal distribution.
+The part for generating random number from mixture normal distribution will not be too difficult. For two mixture normal, 
+we can do by generating random number from two normal distributions. After that, we create another random number with value 0s
+and 1s to decide the ith observation is from which normal distribution. The proportion of 0s in the random number is α1 while
+the proportion of 1s is α2. The difficult part of the simulation study is to choose the appropriate sample size, replication
+number, parameters of normal distribution.
 
 * Do their figures/tables do a good job of presenting the simulation results and do you have any alternative suggestions
 for how to do this? Do the authors address the issue of simulation uncertainty/simulation standard errors and/or do they
 convince the reader they've done enough simulation replications?
-I do not think that their figures/tables give a very clear summary about their simulation study. They have set up 12 null
-models with order 2, used them to calculate the Type I error based on 5000 replications and summarized by boxplot.
-However, I wondered why there is only 1 boxplot for each scenario (different sample sizes and significant levels).
-Are there supposed to have boxplot to summarize each null model? The same things happened when computing powers.
-They give table to summarize the power under different scenarios (different sample size, numbers of iteration,
-combinations of alternative £c and £m, weights) while I think that powers would be different among different null model,
-so perhaps there should be several tables to present the result. For the uncertainty, it seems that they did not reveal any
-information about it. For the choice of replications such as 5000 replications for calculating Type I error and 1000 
-replications for calculating power, they did not explain the reason why they chose the number too.
+I do not think that their figures/tables give a very clear summary about their simulation study. They have set up 12 null models with order 2, used them to calculate the Type I error based on 5000 replications and summarized by boxplot. However, 
+I wondered why there is only 1 boxplot for each scenario (different sample sizes and significant levels). Are there supposed
+to have boxplot to summarize each null model? The same things happened when computing powers. They give table to summarize the
+power under different scenarios (different sample size, numbers of iteration, combinations of alternative θ and σ, weights)
+while I think that powers would be different among different null model, so perhaps there should be several tables to present
+the result. For the uncertainty, it seems that they did not reveal any information about it. For the choice of replications
+such as 5000 replications for calculating Type I error and 1000 replications for calculating power, they did not explain the
+reason why they chose the number too.
 
 * Interpret their tables on power (Tables 4 and 6) - do the results make sense in terms of how the power varies 
 as a function of the data generating mechanism?
@@ -47,7 +46,7 @@ not dramatically.
 * Discuss the extent to which they follow JASA's guidelines on simulation studies (see the end of the Unit 10 class
 notes for the JASA guidelines).
 
-Overall, they follow the JASA¡¦s guidelines such as algorithm, programming language and major software components that 
+Overall, they follow the JASA's guidelines such as algorithm, programming language and major software components that 
 were used. However, the part for estimated accuracy of results and descriptions of pseudorandom-number generators are
 not so clear when I browse through the paper. For example, it did not show that how they generate the data and some 
 uncertain measures such as standard error. 
