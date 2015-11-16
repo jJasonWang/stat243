@@ -1,0 +1,429 @@
+%% LyX 2.1.4 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass{article}
+\usepackage[LGR,T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{geometry}
+\geometry{verbose,tmargin=2.54cm,bmargin=2.54cm,lmargin=3cm,rmargin=3cm}
+\usepackage{amsmath}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+\DeclareRobustCommand{\greektext}{%
+  \fontencoding{LGR}\selectfont\def\encodingdefault{LGR}}
+\DeclareRobustCommand{\textgreek}[1]{\leavevmode{\greektext #1}}
+\DeclareFontEncoding{LGR}{}{}
+\DeclareTextSymbol{\~}{LGR}{126}
+
+\makeatother
+
+\begin{document}
+
+
+\title{STAT243 Problem Set 7}
+
+
+\author{Name: Chih Hui Wang SID: 26955255}
+
+
+\date{November 2, 2015}
+
+\maketitle
+
+\section*{1.}
+\begin{itemize}
+\item \textbf{What are the goals of their simulation study and what are
+the metrics that they consider in assessing their method?}
+\end{itemize}
+The goals of the simulation study are to evaluate the accuracy of
+their proposed asymptotic approximation in finite samples and to examine
+the power of their EM test.
+\begin{itemize}
+\item \textbf{What choices did the authors have to make in designing their
+simulation study? What are the key aspects of the data generating
+mechanism that likely affect the statistical power of the test?}
+\end{itemize}
+When they design their simulation study, they have to decide $\theta$
+and $\sigma$ for the mixture normal models. Also, they calculated
+the test statistic based on their recommendation for \textgreek{b}
+and K as well as the two penalty functions $p(\beta)$ and $p(\sigma^{2},\hat{{\sigma}}^{2})$.
+If the choice of $\theta$ and $\sigma$ was inappropriate, it would
+affect power of the test. For example, if we pick $\theta_{1}$ and
+$\theta_{2}$ which were too closed to each other, we cannot distinguish
+the two groups, which indicated the existence of dominance group.
+\begin{itemize}
+\item \textbf{Suggest some alternatives to how the authors designed their
+study. Are there data-generating scenarios that they did not consider
+that would be useful to consider?}
+\end{itemize}
+They can consider the scenarios that the null order is 1 and compare
+it with alternative order bigger than one.
+\begin{itemize}
+\item \textbf{Give some thoughts on how to set up a simulation study for
+their problem that uses principles of basic experimental design (see
+the Unit 10 notes) or if you think it would be difficult, say why.}
+\end{itemize}
+The part for generating random number from mixture normal distribution
+will not be too difficult. For two mixture normal, we can do by generating
+random number from two normal distributions. After that, we create
+another random number with value 0s and 1s to decide the ith observation
+is from which normal distribution. The proportion of 0s in the random
+number is $\alpha_{1}$ while the proportion of 1s is $\alpha_{2}$.
+The difficult part of the simulation study is to choose the appropriate
+sample size, replication number, parameters of normal distribution.
+\begin{itemize}
+\item \textbf{Do their figures/tables do a good job of presenting the simulation
+results and do you have any alternative suggestions for how to do
+this? Do the authors address the issue of simulation uncertainty/simulation
+standard errors and/or do they convince the reader they've done enough
+simulation replications?}
+\end{itemize}
+I do not think that their figures/tables give a very clear summary
+about their simulation study. They have set up 12 null models with
+order 2, used them to calculate the Type I error based on 5000 replications
+and summarized by boxplot. However, I wondered why there is only 1
+boxplot for each scenario (different sample sizes and significant
+levels). Are there supposed to have boxplot to summarize each null
+model? The same things happened when computing powers. They give table
+to summarize the power under different scenarios (different sample
+size, numbers of iteration, combinations of alternative $\theta$
+and $\sigma$, weights) while I think that powers would be different
+among different null model, so perhaps there should be several tables
+to present the result. For the uncertainty, it seems that they did
+not reveal any information about it. For the choice of replications
+such as 5000 replications for calculating Type I error and 1000 replications
+for calculating power, they did not explain the reason why they chose
+the number too.
+\begin{itemize}
+\item \textbf{Interpret their tables on power (Tables 4 and 6) - do the
+results make sense in terms of how the power varies as a function
+of the data generating mechanism?}
+\end{itemize}
+The results make sense. The power increases as the sample size increases.
+Also, when the alternative models become far away from one another,
+the power increases. Finally, the number of iteration increases, the
+power increases while not dramatically.
+\begin{itemize}
+\item \textbf{Discuss the extent to which they follow JASA's guidelines
+on simulation studies (see the end of the Unit 10 class notes for
+the JASA guidelines).}
+\end{itemize}
+Overall, they follow the JASA\textquoteright s guidelines such as
+algorithm, programming language and major software components that
+were used. However, the part for estimated accuracy of results and
+descriptions of pseudorandom-number generators are not so clear when
+I browse through the paper. For example, it did not show that how
+they generate the data and some uncertain measures such as standard
+error. 
+
+
+\section*{2.}
+
+(a) Below are the steps for the Cholesky decomposition:
+\begin{enumerate}
+\item $U_{11}=\sqrt{A_{11}}$
+\item For $j=2,\ldots,n$, $U_{1j}=A_{1j}/U_{11}$ \textbf{$\lbrace n-1\rbrace$}
+\item For $i=2,\ldots,n$, \end{enumerate}
+\begin{itemize}
+\item $U_{ii}=\sqrt{A_{ii}-\sum_{k=1}^{i-1}U_{ki}^{2}}$ $\lbrace(1+2+\cdots+(n-1)=\dfrac{n(n-1)}{2}\rbrace$
+\item for $j=i+1,\ldots,n$: $U_{ij}=(A_{ij}-\sum_{k=1}^{i-1}U_{ki}U_{kj})/U_{ii}$
+$\lbrace\sum_{i=2}^{n}(n-i)i=\sum_{i=2}^{n}ni-i^{2}=\dfrac{n^{3}-7n+6}{6}\rbrace$
+\end{itemize}
+Hence, the total steps is $(n-1)+\dfrac{n(n-1)}{2}+\dfrac{n^{3}-7n+6}{6}=\dfrac{n^{3}+3n^{2}-4n}{6}.$
+
+\[
+\]
+
+
+(b) No, we will not overwrite the value we need for calculation when
+we do the calculation and store the elements of $U$ at the same time.
+As above steps indicated, we easily tell that the step 1 and 2 can
+be calculated and stored at the same time. For the step 3, when we
+calculate the term $U_{ii}$, we are using the elements above $U_{ii}$
+which will be calculated first. When we calculate the term $U_{ij}$,
+we are using $U_{ii}$ and the elements above $U_{ij}$ and $U_{ii}$.
+All of them will be calculated before we compute $U_{ij}$. Therefore,
+we can do the calculation and store the outcomes in the original matrix
+without using additional memory.
+
+(c) From the results of \textbf{mem\_used} and \textbf{gc}, we can
+see that there is 7.6 MB memory used temporarily when R do the Cholesky
+decomposition. It will be clean soon after R finished the computation.
+Therefore, when doing the Cholesky decomposition, R make a copy of
+the original matrix and do the Cholesky decomposition.
+
+<<memory>>=
+n <- 1000
+X <- crossprod(matrix(rnorm(n^2), n))
+gc(reset=TRUE)
+
+library(pryr)
+@
+
+<<chol>>=
+mem_used()
+gc()
+invisible(chol(X))
+@
+
+<<temporary>>=
+gc()
+@
+
+The graph indicated that both processing time and memory use are cubic
+to n.
+
+<<timescale, fig.align='center', fig.height=3.5, fig.width=7>>=
+#Reset
+gc(reset=TRUE)
+
+n <- seq(1000, 5000, by=1000) 
+record <- function(n){
+  X <- crossprod(matrix(rnorm(n^2), n))
+  time <- rep(0, 2)
+  
+  #Get the processing time(elapsed)
+  time[1] <- system.time(U <- chol(X))[3]
+  
+  #Get the maximum memory for Vcells
+  time[2] <- gc()[2, 5]
+  
+  time
+}
+
+result <- t(sapply(n, record))
+result <- as.data.frame(cbind(n, result))
+
+#Change the variable name
+names(result) <- c("n", "time", "memory")
+
+library(ggplot2); library(gridExtra)
+#Plot
+grid.arrange(
+  ggplot(result, aes(x=n, y=time)) + geom_line(),
+  ggplot(result, aes(x=n, y=memory)) + geom_line(),
+  ncol=2
+)
+@
+
+
+\section*{3.}
+
+(a) \textbf{solve} in R use the LU decomposition and then backsolve
+to get the value. The order of computations for full inversion is
+$n^{3}.$ Therefore, in (a), the order should be $n^{3}+O(n^{2})$
+where $n^{2}$ is the time for multiplication. In (b), the order of
+computations for LU decomposition is $\dfrac{n^{3}}{3}+O(n^{2})$.
+In (c), we use Cholesky decomposition and backsolve which should take
+around $\dfrac{n^{3}}{6}+O(n^{2})$ computation order.
+
+<<setup>>=
+set.seed(0)
+
+#Set-up
+n <- 5000
+X <- crossprod(matrix(rnorm(n^2), n))
+y <- as.matrix(rnorm(n))
+@
+
+<<first>>=
+#First approach
+system.time(b1 <- solve(X) %*% y)
+@
+
+<<second>>=
+#Second approach
+system.time(b2 <- solve(X, y))
+@
+
+<<third>>=
+#Third approach
+approach3 <- function(X, y){
+  U <- chol(X)
+  b <- backsolve(U, backsolve(U, y, transpose=TRUE))
+  b
+}
+
+system.time(b3 <- approach3(X, y))
+@
+
+(b) We can find that the results of these three methods are 7 digits
+in agree.
+
+<<result>>=
+#print out 22 number after decimal point
+options(digits=22)
+
+#Transpose the result for comparison
+t(cbind(head(b1, n=3), head(b2, n=3), head(b3, n=3)))
+@
+
+The conditional number of matrix $X$ is around $10^{7}$ which implies
+that we will have accuracy of order $10^{9}$. It is the same as the
+results above indicated.
+
+<<eigen_value>>=
+#Get back to default
+options(digits=7)
+
+#Eigenvalues
+v <- eigen(X)$values
+
+#condition number
+v[1]/v[length(v)]
+@
+
+
+\section*{4.}
+
+My strategy is to try make the form back to $X^{T}X\beta=X^{T}Y$.
+By doing so, we can apply the QR decomposition and backsolve to get
+the solution, which takes $2np^{2}-\dfrac{2}{3}p^{3}$. Therefore,
+I first start with decomposition for $\Sigma^{-1}$. I use Cholesky
+decomposition, $\Sigma=U^{T}U$, which takes $\dfrac{n^{3}}{6}+O(n^{2})$.
+\begin{eqnarray*}
+X^{T}\Sigma^{-1}X{}^{-1}\beta & = & X^{T}\Sigma^{-1}Y\\
+\Rightarrow X^{T}(U^{T}U)^{-1}X\beta & = & X^{T}(U^{T}U)^{-1}Y\\
+\Rightarrow X^{T}U^{-1}(U^{T})^{-1}X\beta & = & X^{T}U^{-1}(U^{T})^{-1}Y\\
+ & \mbox{}
+\end{eqnarray*}
+
+
+Let $(U^{T})^{-1}X=X^{*}$ (takes $n^{3}$)and $(U^{T})^{-1}Y=Y^{*}$(takes
+$n^{2}$), then the above equation can be rewritten into
+
+\[
+(X^{*})^{T}X^{*}\beta=(X^{*})^{T}Y^{*}
+\]
+
+
+whick is back to the form we familiar with. Now we can use QR decomposition
+for $X^{*}$ and solve the $\beta$ by
+
+\[
+R^{*}\beta=(Q^{*})^{T}Y
+\]
+
+
+where $X^{*}=Q^{*}R^{*}.$ The psesudo-cdoe and the order of computations
+for doing this are: 
+
+<<psesudocode, eval=FALSE>>=
+gls <- function(X, Sigma, y)
+  U <- cholesky(Sigma)
+
+  U_inv <- inverse(U)
+
+  newX <- transpose(U_inv) %*% X
+  newY <- transpose(U_inv) %*% Y
+
+  Q <- QR(newX)
+  R <- QR(newX)$R
+
+  b <- backsolve(R, transpose(Q) %*% newY)
+  b
+}
+@
+
+The following is the R code and a example to run the function.
+
+<<gls>>=
+gls <- function(X, Sigma, y){
+  #Cholesky decomposition of Sigma
+  U <- chol(Sigma)
+  
+  #Compute the new X matrix and y vector
+  UT_inv <- t(solve(U))
+  newX <- UT_inv %*% X
+  newy <- UT_inv %*% y
+  
+  #Do the QR decomposition
+  qrX <- qr(newX)
+  
+  #Q and R matrix
+  Q <- qr.Q(qrX); R <- qr.R(qrX)
+  
+  #Solve the equation
+  b <- backsolve(R, t(Q) %*% newy)
+  b
+}
+@
+
+<<example, fig.align='center', fig.height=3.5, fig.width=3.5>>=
+#Setup
+n <- 3000
+p <- 100
+
+X <- matrix(rnorm(n*p), ncol=p)
+Sigma <- crossprod(matrix(runif(n^2), n))
+Y <- rnorm(n)
+
+system.time(beta <- gls(X, Sigma, Y))
+
+#Predicted value
+Yhat <- X %*% beta
+plot(Y, Yhat)
+@
+
+
+\section*{5.}
+
+(a) $1^{\circ}$ Right singular vectors of $X$ are the eigenvectors
+of the matrix $X^{T}X$.
+
+$2^{\circ}$ The eigenvalues of $X^{T}X$ are the squares of the singular
+values of $X$.
+
+By Singular value decomposition, we can rewrite $X$ as $UDV^{T}$
+where $U$ and $V$ are matrices with orthonormal columns and $D$
+is diagonal matrix with non-negative diagonal elements. Let $X=UDV^{T}$
+and plug it into $X^{T}X$
+
+\begin{eqnarray*}
+X^{T}X & = & (UDV^{T})^{T}UDV^{T}\\
+ & = & VD^{T}U^{T}UDV^{T}\\
+\mbox{(orthonormal)} & = & VD^{T}DV^{T}\\
+ & = & VD'V^{T}\\
+\mbox{(Compare with eigenvalue decomposition)} & = & \Gamma\Lambda\Gamma^{T}
+\end{eqnarray*}
+
+
+where $D'$ is the diagonal matrix which its diagonal elements are
+the square of the diagonal elements in $D$. By compared the last
+two equation, we can get the conclusion that right singular vectors
+of $X$ are the eigenvectors of the matrix $X^{T}X$ and the eigenvalues
+of $X^{T}X$ are the squares of the singular values of $X$.
+
+$3^{\circ}$ $X^{T}X$ is positive semi-definite.
+
+By the definition, if a matrix $M$ is positive semi-definite, then
+$a^{T}Ma\ge0$ for non-zero vector $a$.
+
+\begin{eqnarray*}
+a^{T}X^{T}Xa & = & (Xa)^{T}Xa\\
+(b=Xa) & = & b^{T}b\geq0
+\end{eqnarray*}
+
+
+Since $b=Xa$ is also a vector, the $(Xa)^{T}Xa$ calculates its length,
+which cannot be negative. Therefore, $X^{T}X$ is positive semi-definite.
+
+(b) If $\lambda_{1}$ and $v_{1}$ are the eigenvalue and corresponding
+eigenvector of $X$, then $Xv_{1}=\lambda_{1}v_{1}$. Now we want
+to compute the eigenvalue of $Z=X+cI$. We have computed the eigendecomposition
+of $X$. Suppose $\lambda_{i}$ and $v_{i}$ are one pair of eigenvalue
+and eigenvector of $X$.
+
+\begin{eqnarray*}
+Zv_{i} & = & Xv_{i}+cIv_{i}\\
+ & = & \lambda_{i}v_{i}+cv_{i}\\
+ & = & (\lambda_{i}+c)v_{i}\\
+ & = & \lambda_{i}'v_{i}
+\end{eqnarray*}
+
+
+To compute the eigenvalues of $Z$, we only have to add the scalar
+$c$ to each eigenvalue $\lambda_{i}$, which takes $O(n)$ additions.
+
+\end{document}
