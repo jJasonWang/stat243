@@ -1,0 +1,2355 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\begin_modules
+knitr
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 3cm
+\topmargin 2.54cm
+\rightmargin 3cm
+\bottommargin 2.54cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+STAT243 Problem Set 8
+\end_layout
+
+\begin_layout Author
+Name: Chih-Hui Wang SID: 26955255
+\end_layout
+
+\begin_layout Date
+November 18, 2015
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<setup, include=FALSE>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+knitr::opts_chunk$set(fig.align='center')
+\end_layout
+
+\begin_layout Plain Layout
+
+knitr::opts_chunk$set(fig.width=5, fig.height=3.5) 
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+1.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+(a) To compare the performance of two methods, we have to generate the simulated
+ dataset.
+ For the detailed of creating te datset, see (b).
+ We seperate the data into two parts.
+ We take the first part of the data to fit models by two methods while another
+ part is for evaulating performance.
+ After fitting models, we can report the absoulte prediction error by calculatin
+g the absolute difference between the true value and predicted value by
+ two methods.
+ For the coverage of the prediction interval, we utilize the nonparametric
+ bootstrap.
+ We will repeat the following procedure for many times.
+ First, we sample n observations from the data which is used to fit model
+ with replacement.(Assume the total number in the data for fitting model
+ is n) Second, we get the predicted value for X in the data for evaluation.
+ After doing the process for several times, we will have a bunch of predicted
+ value for each X in the data for evaluation.
+ We can construct the prediction interval from those predicted value.
+ If we want to construct the 95% prediction interval, we can pick the 2.5%
+ and 97.5% quantiles as the lower bound and upper bound of the interval.
+ With the prediciton interval, we can check whether the true value is inside
+ the interval and report the coverage of prediction interval.
+ The pseudo code is below:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<study, eval=FALSE>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#Data
+\end_layout
+
+\begin_layout Plain Layout
+
+Generate data D with outlier from your technique.
+\end_layout
+
+\begin_layout Plain Layout
+
+#Setup
+\end_layout
+
+\begin_layout Plain Layout
+
+Seperate D into data for fitting model D1 and data for evaluting performance
+ D2.
+\end_layout
+
+\begin_layout Plain Layout
+
+#Fitting model
+\end_layout
+
+\begin_layout Plain Layout
+
+Run two methods on D1 and compute the predicted value for D2.
+\end_layout
+
+\begin_layout Plain Layout
+
+#Prediciton error
+\end_layout
+
+\begin_layout Plain Layout
+
+Calculate the absolute difference between the above predicted value and
+\end_layout
+
+\begin_layout Plain Layout
+
+true value in D2 and report absolute prediction error
+\end_layout
+
+\begin_layout Plain Layout
+
+#Coverage of prediciton interval; m is the times of bootstraping
+\end_layout
+
+\begin_layout Plain Layout
+
+for i from 1 to m:
+\end_layout
+
+\begin_layout Plain Layout
+
+  #There are n observations in D1
+\end_layout
+
+\begin_layout Plain Layout
+
+  sample n observations from D1 with replacement Dboot
+\end_layout
+
+\begin_layout Plain Layout
+
+  Run two two methods on Dboot
+\end_layout
+
+\begin_layout Plain Layout
+
+  Compute the predicted value for D2 and save both predicted value in pred1
+ and pred2
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Get the prediction interval
+\end_layout
+
+\begin_layout Plain Layout
+
+Set the alpha value
+\end_layout
+
+\begin_layout Plain Layout
+
+Construct the prediction interval by picking the alpha/2 and 1-(alpha/2)
+ quantile
+\end_layout
+
+\begin_layout Plain Layout
+
+Calculate how many obersvations in D2 falling into the corresponding interval
+ and 
+\end_layout
+
+\begin_layout Plain Layout
+
+report the coverage of the prediction interval
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+(b) Here we assume that we only have one covariate 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+.
+ According to the regression equation, we can construct 
+\begin_inset Formula $(x_{i},y_{i})$
+\end_inset
+
+ by 
+\begin_inset Formula $y_{i}=\beta_{0}+\beta_{1}x_{i}+\epsilon_{i}i=1,2,\cdots,n$
+\end_inset
+
+ where 
+\begin_inset Formula $\epsilon_{i}\sim N(0,\sigma^{2})$
+\end_inset
+
+.
+ To generate the outlier, my strategy is to change the distribution of error
+ terms.
+ If we make their distribution heavier tail than normal distribution such
+ as t-distribution, then we can generate outliers.
+ Those outliers will have a huge influence on the coefficient estmation
+ for the standard linear regression.
+\end_layout
+
+\begin_layout Standard
+The following is the code for generating simulated dataset.
+ I use t-distribution as the distribution for the error term distribution
+ of outliers.
+ There are several arguments which can adjust.
+ n is the total number of data, outlier_prop is the proportion of outlier,
+ a is the slope, b is the intercept, xrange is the range for generating
+ x, and sigma is the variance of normal distribution.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<outlier>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+sim_data <- function(n, outlier_prop=0.01, a=5, b=1, xrange=c(-5, 5), sigma=2){
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Construct pair of x,y
+\end_layout
+
+\begin_layout Plain Layout
+
+  x <- runif(n, xrange[1], xrange[2])
+\end_layout
+
+\begin_layout Plain Layout
+
+  y <- seq_along(x)
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Number of outlier
+\end_layout
+
+\begin_layout Plain Layout
+
+  nout <- n*outlier_prop
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  idx <- sample(n, n - nout)
+\end_layout
+
+\begin_layout Plain Layout
+
+  y[idx] <- a*x[idx] + b + rnorm(n - nout, 0, sqrt(sigma))
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Outlier
+\end_layout
+
+\begin_layout Plain Layout
+
+  y[-idx] <- a*x[-idx] + b + rt(nout, 1)
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  data <- cbind(x, y)
+\end_layout
+
+\begin_layout Plain Layout
+
+  as.data.frame(data)
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Below is the example for generating data and graph.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<example, fig.height=5>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+data <- sim_data(100, outlier_prop=0.05)
+\end_layout
+
+\begin_layout Plain Layout
+
+with(data, plot(x, y))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+2.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+(a) The density of Pareto distribution is 
+\begin_inset Formula $\dfrac{\beta\alpha^{\beta}}{x^{\beta+1}}$
+\end_inset
+
+.
+ The density of exponential distribution is 
+\begin_inset Formula $\dfrac{1}{\beta}e^{-\frac{x}{\beta}}$
+\end_inset
+
+.
+ The tail of Pareto distribution will decay more slowly than exponential
+ distribution because Pareto distribution decaies in power way while exponential
+ distribution decaies in exponential way.
+\end_layout
+
+\begin_layout Standard
+(b) 
+\begin_inset Formula $f$
+\end_inset
+
+ is the exponential density and 
+\begin_inset Formula $g$
+\end_inset
+
+ is the Pareto density.
+ To use the importance sampling for estimating 
+\begin_inset Formula $E_{f}(X)$
+\end_inset
+
+, we have to generate random number 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ from 
+\begin_inset Formula $g$
+\end_inset
+
+, Pareto distribution and evalute 
+\begin_inset Formula $f(x_{i})$
+\end_inset
+
+ and 
+\begin_inset Formula $g(x_{i})$
+\end_inset
+
+.
+ Then, we can get the estimate 
+\begin_inset Formula $\hat{\mu}=\dfrac{1}{m}\sum_{i=1}^{m}x_{i}\dfrac{f(x_{i})}{g(x_{i})}$
+\end_inset
+
+ where m is the total number of 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+.
+ We have to find a way to generate random number from Pareto distribution.
+ I use the inverse CDF method to write a function 
+\series bold
+rpareto
+\series default
+ to draw number from Pareto distribution.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+F_{g}(x) & = & P(G\leq x)\\
+ & = & \int_{\alpha}^{x}\dfrac{\beta\alpha^{\beta}}{t^{\beta+1}}dt\\
+ & = & -\dfrac{\alpha^{\beta}}{t^{\beta}}|_{\alpha}^{x}\\
+ & = & 1-(\dfrac{\alpha}{x})^{\beta}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We can generate random number 
+\begin_inset Formula $u_{i}$
+\end_inset
+
+ from uniform(0,1) distribution and let 
+\begin_inset Formula $x_{i}=\dfrac{\alpha}{(1-u_{i})^{1/\beta}}$
+\end_inset
+
+.
+ The following codes are dpareto and rpareto:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<drpareto>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#Multiple by x > 2 to make sure the function evalute when x > 2
+\end_layout
+
+\begin_layout Plain Layout
+
+dpareto <- function(x, alpha, beta){
+\end_layout
+
+\begin_layout Plain Layout
+
+  (beta*alpha^beta)/(x^(beta + 1))*(x > 2)
+\end_layout
+
+\begin_layout Plain Layout
+
+} 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+rpareto <- function(n, alpha, beta){
+\end_layout
+
+\begin_layout Plain Layout
+
+  u <- runif(n)
+\end_layout
+
+\begin_layout Plain Layout
+
+  alpha/((1 - u)^(1/beta))
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<setting>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#Setting
+\end_layout
+
+\begin_layout Plain Layout
+
+alpha <- 2; beta <- 3; rate <- 1; m <- 10000
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The steps for the following calculation are similar.
+ First, we will generate random number 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ from 
+\begin_inset Formula $g$
+\end_inset
+
+, Pareto distribution.
+ After evaluating the density of 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ under Pareto and exponential distribution, we can compute the weight 
+\begin_inset Formula $\dfrac{f(x_{i})}{g(x_{i})}$
+\end_inset
+
+ and plug into the formula 
+\begin_inset Formula $\hat{\mu}=\dfrac{1}{m}\sum_{i=1}^{m}x_{i}\dfrac{f(x_{i})}{g(x_{i})}$
+\end_inset
+
+.
+ In this case, we should get a value close to 
+\begin_inset Formula $E(X)+2=3$
+\end_inset
+
+ which is the shifted mean of exponential distribution with rate equal to
+ 1.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<expectation_e>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#Shifted exponential
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(0)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#E(X)
+\end_layout
+
+\begin_layout Plain Layout
+
+x1 <- rpareto(m, alpha, beta)
+\end_layout
+
+\begin_layout Plain Layout
+
+f1 <- dexp(x1 - 2, rate)
+\end_layout
+
+\begin_layout Plain Layout
+
+g1 <- dpareto(x1, alpha, beta)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Weight
+\end_layout
+
+\begin_layout Plain Layout
+
+w1 <- f1/g1
+\end_layout
+
+\begin_layout Plain Layout
+
+mu_hat <- mean(x1*w1)
+\end_layout
+
+\begin_layout Plain Layout
+
+mu_hat
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The following is the histogram of weight 
+\begin_inset Formula $\dfrac{f(x_{i})}{g(x_{i})}$
+\end_inset
+
+ and weighted 
+\begin_inset Formula $x_{i}'=x_{i}\dfrac{f(x_{i})}{g(x_{i})}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<hist1>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mfrow=c(1, 2))
+\end_layout
+
+\begin_layout Plain Layout
+
+hist(w1, prob=TRUE, main="Histogram of Weights")
+\end_layout
+
+\begin_layout Plain Layout
+
+hist(x1*w1, prob=TRUE, main="Histogram of weighted x")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The procedure is the same as previous.
+ We only have to change the formula by 
+\begin_inset Formula $\hat{{E(X^{2})}}=\dfrac{1}{m}\sum_{i=1}^{m}x_{i}^{2}\dfrac{f(x_{i})}{g(x_{i})}$
+\end_inset
+
+.
+ The value should be closed to 
+\begin_inset Formula $Var(X)+[E(X)]^{2}$
+\end_inset
+
+, which is 10.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<xsquare_e>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#E(X^2)
+\end_layout
+
+\begin_layout Plain Layout
+
+x2 <- rpareto(m, alpha, beta)
+\end_layout
+
+\begin_layout Plain Layout
+
+f2 <- dexp(x2 - 2, rate)
+\end_layout
+
+\begin_layout Plain Layout
+
+g2 <- dpareto(x2, alpha, beta)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Weight
+\end_layout
+
+\begin_layout Plain Layout
+
+w2 <- f2/g2
+\end_layout
+
+\begin_layout Plain Layout
+
+xsquare_hat <- mean((x2^2)*w2)
+\end_layout
+
+\begin_layout Plain Layout
+
+xsquare_hat
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The following is the histogram of weight 
+\begin_inset Formula $\dfrac{f(x_{i})}{g(x_{i})}$
+\end_inset
+
+ and weighted 
+\begin_inset Formula $x_{i}'=x_{i}^{2}\dfrac{f(x_{i})}{g(x_{i})}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<hist2>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mfrow=c(1, 2))
+\end_layout
+
+\begin_layout Plain Layout
+
+hist(w2, prob=TRUE, main="Histogram of Weights")
+\end_layout
+
+\begin_layout Plain Layout
+
+hist(x2*w2, prob=TRUE, main="Histogram of weighted x")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+(c) Now we only have to exchange the 
+\begin_inset Formula $f$
+\end_inset
+
+ into Pareto distribution and 
+\begin_inset Formula $g$
+\end_inset
+
+ into exponential distribution.
+ Note that when we generate the random number from exponential distribution,
+ we have to add 2 because we should shifted by 2.
+ The estimates should be closed to 
+\begin_inset Formula $E(X)=\dfrac{\beta\alpha}{\beta-1}=3$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<expectation_p>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#Pareto
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(0)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#E(X)
+\end_layout
+
+\begin_layout Plain Layout
+
+x1 <- rexp(m, rate) + 2
+\end_layout
+
+\begin_layout Plain Layout
+
+f1 <- dpareto(x1, alpha, beta)
+\end_layout
+
+\begin_layout Plain Layout
+
+g1 <- dexp(x1 - 2, rate)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Weight
+\end_layout
+
+\begin_layout Plain Layout
+
+w1 <- f1/g1
+\end_layout
+
+\begin_layout Plain Layout
+
+mu_hat <- mean(x1*w1)
+\end_layout
+
+\begin_layout Plain Layout
+
+mu_hat
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In this case, the histogram indicate that there are outliers in the data,
+ which is the reason make the estimates will be not stable.
+ It is becasue the exponential distribution have a lighter tail than Pareto
+ distribution, which will let the weight 
+\begin_inset Formula $\dfrac{f(x_{i})}{g(x_{i})}$
+\end_inset
+
+ become large.
+ It will enlarge the variance when we do the estimation.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<hist3>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mfrow=c(1, 2))
+\end_layout
+
+\begin_layout Plain Layout
+
+hist(w1, prob=TRUE, main="Histogram of Weights")
+\end_layout
+
+\begin_layout Plain Layout
+
+hist(x1*w1, prob=TRUE, main="Histogram of weighted x")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The estimates should be closed to 
+\begin_inset Formula $E(X^{2})=Var(X)+[E(X)]^{2}=\dfrac{\beta\alpha^{2}}{(\beta-1)^{2}(\beta-2)}+(\dfrac{\beta\alpha}{\beta-1})^{2}=12$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<xsquare_p>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#E(X^2)
+\end_layout
+
+\begin_layout Plain Layout
+
+x2 <- rexp(m, rate) + 2
+\end_layout
+
+\begin_layout Plain Layout
+
+f2 <- dpareto(x2, alpha, beta)
+\end_layout
+
+\begin_layout Plain Layout
+
+g2 <- dexp(x2 - 2, rate)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Weight
+\end_layout
+
+\begin_layout Plain Layout
+
+w2 <- f2/g2
+\end_layout
+
+\begin_layout Plain Layout
+
+xsquare_hat <- mean((x2^2)*w2) 
+\end_layout
+
+\begin_layout Plain Layout
+
+xsquare_hat
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<hist4>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mfrow=c(1, 2))
+\end_layout
+
+\begin_layout Plain Layout
+
+hist(w2, prob=TRUE, main="Histogram of Weights")
+\end_layout
+
+\begin_layout Plain Layout
+
+hist(x2*w2, prob=TRUE, main="Histogram of weighted x")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+3.
+\end_layout
+
+\begin_layout Standard
+(a)
+\end_layout
+
+\begin_layout Section*
+\begin_inset Formula 
+\[
+l(\beta)=\dfrac{-n}{2}\log2\pi-\dfrac{1}{2}\sum_{i=1}^{n}(z_{i}-X_{i}^{T}\beta)^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+E-step: 
+\begin_inset Formula 
+\begin{eqnarray*}
+Q(\beta)=E[l(\beta)] & = & \dfrac{-n}{2}\log2\pi-\dfrac{1}{2}\big(\sum_{i=1}^{n}E(z_{i}^{2}|y_{i},\beta)-(X_{i}^{T}\beta)E(z_{i}|y_{i},\beta)+X_{i}^{T}\beta\beta^{T}X_{i}\big)\\
+ & = & \dfrac{-n}{2}\log2\pi-\dfrac{1}{2}\sum_{i=1}^{n}Var(z_{i}|y_{i},\beta)-\dfrac{1}{2}\big(\sum_{i=1}^{n}[E(z_{i}|y_{i},\beta)]^{2}-(X_{i}^{T}\beta)E(z_{i}|y_{i},\beta)+X_{i}^{T}\beta\beta^{T}X_{i}\big)\\
+ & = & \dfrac{-n}{2}\log2\pi-\dfrac{1}{2}\sum_{i=1}^{n}Var(z_{i}|y_{i},\beta)-\dfrac{1}{2}\sum_{i=1}^{n}\big(E(z_{i}|y_{i},\beta)-X_{i}^{T}\beta\big)^{2}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+M-step: 
+\begin_inset Formula 
+\begin{eqnarray*}
+\dfrac{\partial Q(\beta)}{\partial\beta} & = & \sum_{i=1}^{n}\big(E(z_{i}|y_{i},\beta)-X_{i}^{T}\beta\big)X_{i}\\
+0 & = & \sum_{i=1}^{n}X_{i}^{T}E(z_{i}|y_{i},\beta)-\sum_{i=1}^{n}X_{i}^{T}X_{i}\beta\\
+\mbox{Update}\rightarrow\beta_{t+1} & = & \dfrac{\sum_{i=1}^{n}X_{i}^{T}E(z_{i}|y_{i},\beta_{t})}{\sum_{i=1}^{n}X_{i}^{T}X_{i}}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $E(z_{i}|y_{i},\beta)=\begin{cases}
+X_{i}^{T}\beta+\dfrac{\phi(-X_{i}^{T}\beta)}{1-\Phi(-X_{i}^{T}\beta)}, & y_{i}=1\\
+X_{i}^{T}\beta-\dfrac{\phi(-X_{i}^{T}\beta)}{\Phi(-X_{i}^{T}\beta)}, & y_{i}=0
+\end{cases}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It is actually the solution of linear regression for 
+\begin_inset Formula $E(z_{i}|y_{i},\beta)$
+\end_inset
+
+ is the dependent variable while 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ are the independent variables.
+\end_layout
+
+\begin_layout Standard
+(b) Set the initial value to (0, 0, 0, 0).
+\end_layout
+
+\begin_layout Standard
+(c) To generate the data with 
+\begin_inset Formula $\hat{\beta}_{1}/se(\hat{\beta}_{1})\approx2$
+\end_inset
+
+, I use glm with binomial family and link probit to try different beta parameter
+ and come out with a beta with the value 
+\begin_inset Formula $\hat{\beta}_{1}/se(\hat{\beta}_{1})$
+\end_inset
+
+ close to 2.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<data1>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(0)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#beta to generate data
+\end_layout
+
+\begin_layout Plain Layout
+
+mybeta <- c(1, -20, 3, 0)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Setup
+\end_layout
+
+\begin_layout Plain Layout
+
+n <- 100
+\end_layout
+
+\begin_layout Plain Layout
+
+p <- length(mybeta) - 1
+\end_layout
+
+\begin_layout Plain Layout
+
+X <- matrix(rnorm(n*p), ncol=p)
+\end_layout
+
+\begin_layout Plain Layout
+
+z <- rnorm(n, X*mybeta)
+\end_layout
+
+\begin_layout Plain Layout
+
+y <- (z > 1)*1
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Use glm to fit probit model
+\end_layout
+
+\begin_layout Plain Layout
+
+fit <- glm(y ~ X, family=binomial(link="probit"))
+\end_layout
+
+\begin_layout Plain Layout
+
+beta_1_hat <- summary(fit)$coefficients[2, 1]
+\end_layout
+
+\begin_layout Plain Layout
+
+se_1_hat <- summary(fit)$coefficients[2, 2]
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Should be close to 2
+\end_layout
+
+\begin_layout Plain Layout
+
+beta_1_hat/se_1_hat
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+First, I write a function to compute the term 
+\begin_inset Formula $E(z_{i}|y_{i},\beta)$
+\end_inset
+
+.
+ In 
+\series bold
+my_em
+\series default
+, I use 
+\series bold
+lm
+\series default
+ function for updating beta.
+ My criteria for convergence is that if difference between new beta and
+ old beta is small than the tolerance 
+\series bold
+tol
+\series default
+, then the functon will stop the iteration.
+ It will output the coefficient and the number of iteration.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<EM>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#Expectation of zi when yi equal to 1 and 0
+\end_layout
+
+\begin_layout Plain Layout
+
+fun <- function(X, y, beta){
+\end_layout
+
+\begin_layout Plain Layout
+
+  mu <- cbind(1, X) %*% beta
+\end_layout
+
+\begin_layout Plain Layout
+
+  ifelse(y == 1, 
+\end_layout
+
+\begin_layout Plain Layout
+
+         mu + dnorm(-mu)/(1 - pnorm(-mu)),
+\end_layout
+
+\begin_layout Plain Layout
+
+         mu - dnorm(-mu)/pnorm(-mu))
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#EM
+\end_layout
+
+\begin_layout Plain Layout
+
+my_em <- function(X, y, beta, tol=1e-8){
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Initial setup
+\end_layout
+
+\begin_layout Plain Layout
+
+  beta_old <- beta
+\end_layout
+
+\begin_layout Plain Layout
+
+  expect_z <- fun(X, y, beta_old)
+\end_layout
+
+\begin_layout Plain Layout
+
+  fit <- lm(expect_z ~ X)
+\end_layout
+
+\begin_layout Plain Layout
+
+  beta_new <- coef(fit)
+\end_layout
+
+\begin_layout Plain Layout
+
+  iter <- 1
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Update step
+\end_layout
+
+\begin_layout Plain Layout
+
+  while(sqrt(sum((beta_old - beta_new)^2)) > tol){
+\end_layout
+
+\begin_layout Plain Layout
+
+    beta_old <- beta_new
+\end_layout
+
+\begin_layout Plain Layout
+
+    expect_z <- fun(X, y, beta_old)
+\end_layout
+
+\begin_layout Plain Layout
+
+    fit <- lm(expect_z ~ X)
+\end_layout
+
+\begin_layout Plain Layout
+
+    beta_new <- coef(fit)
+\end_layout
+
+\begin_layout Plain Layout
+
+    iter <- iter + 1
+\end_layout
+
+\begin_layout Plain Layout
+
+  }
+\end_layout
+
+\begin_layout Plain Layout
+
+  list(beta_new, iter)
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Initial value of beta
+\end_layout
+
+\begin_layout Plain Layout
+
+beta_init <- c(0, 0, 0, 0)
+\end_layout
+
+\begin_layout Plain Layout
+
+out <- my_em(X, y, beta_init)
+\end_layout
+
+\begin_layout Plain Layout
+
+out
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<coef>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#Should be close
+\end_layout
+
+\begin_layout Plain Layout
+
+rbind(coef(fit), out[[1]])
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+(d) We can maximize the expected log-likelihood 
+\begin_inset Formula $Q(\beta)=E[l(\beta)]=\sum_{i=1}^{n}\big(E(z_{i}|y_{i},\beta)-X_{i}^{T}\beta\big)^{2}$
+\end_inset
+
+.
+ We can find the estimates are quite different from the EM algorithm and
+ glm.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<myoptim>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#Log-likelihood
+\end_layout
+
+\begin_layout Plain Layout
+
+loglike <- function(beta){
+\end_layout
+
+\begin_layout Plain Layout
+
+  sum((fun(X, y, beta) - cbind(1, X) %*% beta)^2)
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+optim(beta_init, loglike, method="BFGS")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+4.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This is the function we want to minimize in the helical.R.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<helical>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#functions in helical.R
+\end_layout
+
+\begin_layout Plain Layout
+
+theta <- function(x1, x2){
+\end_layout
+
+\begin_layout Plain Layout
+
+  atan2(x2, x1)/(2*pi)
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+f <- function(x) {
+\end_layout
+
+\begin_layout Plain Layout
+
+  f1 <- 10*(x[3] - 10*theta(x[1], x[2]))
+\end_layout
+
+\begin_layout Plain Layout
+
+  f2 <- 10*(sqrt(x[1]^2 + x[2]^2) - 1)
+\end_layout
+
+\begin_layout Plain Layout
+
+  f3 <- x[3]
+\end_layout
+
+\begin_layout Plain Layout
+
+  return(f1^2 + f2^2 + f3^2)
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I will generate data by holding one variable constant(for 3 points -5, 0,
+ 5) and varying other variables from -10 to 10.
+ Therefore, it has 9 different scenarios.
+ For the purpose of modularity, I write a function to generate data and
+ process them into the form we can use for creating plot.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<data_generate>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#functions that generate data
+\end_layout
+
+\begin_layout Plain Layout
+
+data_generate <- function(fix_value, fix_position, limit){
+\end_layout
+
+\begin_layout Plain Layout
+
+  n <- length(limit)^2
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Empty matrix for filling value
+\end_layout
+
+\begin_layout Plain Layout
+
+  m <- matrix(0, nrow=n, ncol=4)
+\end_layout
+
+\begin_layout Plain Layout
+
+  colnames(m) <- c("x1", "x2", "x3", "value")
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Fill in the x1, x2, x3
+\end_layout
+
+\begin_layout Plain Layout
+
+  m[, fix_position] <- rep(fix_value, n)
+\end_layout
+
+\begin_layout Plain Layout
+
+  m[, -c(fix_position, 4)] <- as.matrix(expand.grid(limit, limit))
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  #Compute the value
+\end_layout
+
+\begin_layout Plain Layout
+
+  m[, 4] <- apply(m[, -4], 1, f)
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  as.data.frame(m)
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As mentioned previously, I set the range from -10 to 10 and for the constant
+ value, it will be -5, 0, 5 respectively.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<data2>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#setting
+\end_layout
+
+\begin_layout Plain Layout
+
+limit <- -10:10
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Constant x1 for 0, 5, -5
+\end_layout
+
+\begin_layout Plain Layout
+
+dt <- data_generate(0, 1, limit)
+\end_layout
+
+\begin_layout Plain Layout
+
+dt2 <- data_generate(5, 1, limit)
+\end_layout
+
+\begin_layout Plain Layout
+
+dt3 <- data_generate(-5, 1, limit)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Constant x2 for 0, 5, -5
+\end_layout
+
+\begin_layout Plain Layout
+
+dt4 <- data_generate(0, 2, limit)
+\end_layout
+
+\begin_layout Plain Layout
+
+dt5 <- data_generate(5, 2, limit)
+\end_layout
+
+\begin_layout Plain Layout
+
+dt6 <- data_generate(-5, 2, limit)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Constant x3 for 0, 5, -5
+\end_layout
+
+\begin_layout Plain Layout
+
+dt7 <- data_generate(0, 3, limit)
+\end_layout
+
+\begin_layout Plain Layout
+
+dt8 <- data_generate(5, 3, limit)
+\end_layout
+
+\begin_layout Plain Layout
+
+dt9 <- data_generate(-5, 3, limit)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Here I will use the 
+\series bold
+geom_tile
+\series default
+ in ggplot to present how the function behaves under 9 distinct scenarios.
+ The darker the region is, the higher the function vale is.
+ I use 
+\series bold
+%+%
+\series default
+ to update data render to the plot as well as change the title.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<plot>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#packages
+\end_layout
+
+\begin_layout Plain Layout
+
+library(ggplot2)
+\end_layout
+
+\begin_layout Plain Layout
+
+library(gridExtra)
+\end_layout
+
+\begin_layout Plain Layout
+
+library(grid)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Graph for constant x1
+\end_layout
+
+\begin_layout Plain Layout
+
+g1 <- ggplot(dt, aes(x=x2, y=x3, fill=value)) + 
+\end_layout
+
+\begin_layout Plain Layout
+
+  geom_tile() + 
+\end_layout
+
+\begin_layout Plain Layout
+
+  scale_fill_continuous(low="white", high="black", limit=c(0, 30000)) +
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+  labs(title="x1 equal to 0") +
+\end_layout
+
+\begin_layout Plain Layout
+
+  theme(legend.margin=unit(1, "cm"))
+\end_layout
+
+\begin_layout Plain Layout
+
+g2 <- g1 %+% dt2 + labs(title="x1 equal to 5")
+\end_layout
+
+\begin_layout Plain Layout
+
+g3 <- g1 %+% dt3 + labs(title="x1 equal to -5")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Graph for constant x2
+\end_layout
+
+\begin_layout Plain Layout
+
+g4 <- g1 %+% dt4 + aes(x=x1) + labs(title="x2 equal to 0")
+\end_layout
+
+\begin_layout Plain Layout
+
+g5 <- g1 %+% dt5 + aes(x=x1) + labs(title="x2 equal to 5")
+\end_layout
+
+\begin_layout Plain Layout
+
+g6 <- g1 %+% dt6 + aes(x=x1) + labs(title="x2 equal to -5")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#Graph for constant x3
+\end_layout
+
+\begin_layout Plain Layout
+
+g7 <- g1 %+% dt7 + aes(x=x1, y=x2) + labs(title="x3 equal to 0")
+\end_layout
+
+\begin_layout Plain Layout
+
+g8 <- g1 %+% dt8 + aes(x=x1, y=x2) + labs(title="x3 equal to 5")
+\end_layout
+
+\begin_layout Plain Layout
+
+g9 <- g1 %+% dt9 + aes(x=x1, y=x2) + labs(title="x3 equal to -5")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For simplicity, I want to make all the plot share one legend.
+ I find the function 
+\series bold
+grid_arrange_shared_legend 
+\series default
+from ggplot2 github.
+ I adjust it a little bit to let the legend shown on the right side of the
+ plot.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<share_legend>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#Reference: https://github.com/hadley/ggplot2/wiki/Share-a-legend-between-two-ggp
+lot2-graphs
+\end_layout
+
+\begin_layout Plain Layout
+
+grid_arrange_shared_legend <- function(...) {
+\end_layout
+
+\begin_layout Plain Layout
+
+  plots <- list(...)
+\end_layout
+
+\begin_layout Plain Layout
+
+  g <- ggplotGrob(plots[[1]])$grobs
+\end_layout
+
+\begin_layout Plain Layout
+
+  legend <- g[[which(sapply(g, function(x) x$name) == "guide-box")]]
+\end_layout
+
+\begin_layout Plain Layout
+
+  lwidth <- sum(legend$widths)
+\end_layout
+
+\begin_layout Plain Layout
+
+  grid.arrange(
+\end_layout
+
+\begin_layout Plain Layout
+
+    do.call(arrangeGrob, lapply(plots, function(x)
+\end_layout
+
+\begin_layout Plain Layout
+
+      x + theme(legend.position="none"))),
+\end_layout
+
+\begin_layout Plain Layout
+
+    legend,
+\end_layout
+
+\begin_layout Plain Layout
+
+    ncol = 2,
+\end_layout
+
+\begin_layout Plain Layout
+
+    widths = unit.c(unit(1, "npc") - lwidth, lwidth))
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Overall, the value of the function minimize when two non-constant varable
+ are around zero.
+ It seems to be marginally symmetric when 
+\begin_inset Formula $x_{1}=0,x_{2}=0,x_{1}=-5$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<final_plot, fig.height=7, fig.width=8>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#Final plot
+\end_layout
+
+\begin_layout Plain Layout
+
+grid_arrange_shared_legend(g1, g2, g3, g4, g5, g6, g7, g8, g9, ncol=3)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I try four different initial values here for (0, 0, 0), (5, 0, 0), (0, 5,
+ 0), (0, 0, 5) and use the 
+\series bold
+optimx
+\series default
+ function(in the optimx library) to perform 5 minimizing methods.
+ There are several local minimum points and most of them are closed to (1,
+ 0, 0).
+ The results show that some of the methods such as nlm perform worsely in
+ this optimization.
+ For the Nelder-Mead method, 4 initial values converge to the almost same
+ result.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<optim>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(optimx)
+\end_layout
+
+\begin_layout Plain Layout
+
+usemethod <- c("Nelder-Mead", "BFGS", "nlm", "nlminb", "L-BFGS-B")
+\end_layout
+
+\begin_layout Plain Layout
+
+try1 <- optimx(c(0, 0, 0), f, method=usemethod)
+\end_layout
+
+\begin_layout Plain Layout
+
+try2 <- optimx(c(5, 0, 0), f, method=usemethod)
+\end_layout
+
+\begin_layout Plain Layout
+
+try3 <- optimx(c(0, 5, 0), f, method=usemethod)
+\end_layout
+
+\begin_layout Plain Layout
+
+try4 <- optimx(c(0, 0, 5), f, method=usemethod)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+all <- unique(rbind(try1[, 1:4], try2[1:4], try3[1:4], try4[1:4]))
+\end_layout
+
+\begin_layout Plain Layout
+
+all[order(all$value), ]
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
